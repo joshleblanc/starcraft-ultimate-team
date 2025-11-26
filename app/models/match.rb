@@ -1,4 +1,6 @@
 class Match < ApplicationRecord
+  broadcasts_refreshes 
+  
   STATUSES = %w[pending lineup_submitted in_progress completed].freeze
   GAMES_TO_WIN = 3 # Best of 5
 
@@ -28,6 +30,15 @@ class Match < ApplicationRecord
 
   def both_lineups_submitted?
     home_lineup&.submitted? && away_lineup&.submitted?
+  end
+
+  def ensure_cpu_lineups!
+    home_team.auto_submit_lineup_for!(self) if home_team.is_cpu?
+    away_team.auto_submit_lineup_for!(self) if away_team.is_cpu?
+
+    if both_lineups_submitted? && status == "pending"
+      update!(status: "lineup_submitted")
+    end
   end
 
   def can_simulate?
@@ -64,6 +75,10 @@ class Match < ApplicationRecord
 
   def completed?
     status == "completed"
+  end
+
+  def in_progress?
+    status == "in_progress"
   end
 
   def team_score(team)
@@ -123,8 +138,8 @@ class Match < ApplicationRecord
     home_membership.record_match_result(won: home_won, games_won: home_score, games_lost: away_score)
     away_membership.record_match_result(won: !home_won, games_won: away_score, games_lost: home_score)
 
-    # Send notifications
-    MatchCompletedNotification.with(match: self).deliver(winner.user)
-    MatchCompletedNotification.with(match: self).deliver(loser.user)
+    # Send notifications (only to human players)
+    MatchCompletedNotification.with(match: self).deliver(winner.user) if winner.user.present?
+    MatchCompletedNotification.with(match: self).deliver(loser.user) if loser.user.present?
   end
 end

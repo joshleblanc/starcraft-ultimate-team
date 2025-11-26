@@ -3,6 +3,29 @@
   <p class="mt-2 text-gray-400">Manage your SC2 Ultimate Team collection</p>
 </div>
 
+<!-- Play Cup Rush CTA -->
+<% if @team %>
+  <%= link_to cup_rush_path, class: "block mb-8 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 p-6 hover:from-cyan-500 hover:to-purple-500 transition-all" do %>
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-2xl font-bold text-white">🏆 Cup Rush</div>
+        <div class="text-cyan-100">Play against CPU teams in a league tournament</div>
+      </div>
+      <div class="text-4xl">→</div>
+    </div>
+  <% end %>
+<% else %>
+  <%= link_to new_team_path, class: "block mb-8 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 p-6 hover:from-cyan-500 hover:to-purple-500 transition-all" do %>
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-2xl font-bold text-white">👥 Create Your Team</div>
+        <div class="text-cyan-100">Set up your team to start playing Cup Rush</div>
+      </div>
+      <div class="text-4xl">→</div>
+    </div>
+  <% end %>
+<% end %>
+
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
   <!-- Quick Stats -->
   <div class="lg:col-span-2 grid grid-cols-2 gap-4 sm:grid-cols-4">

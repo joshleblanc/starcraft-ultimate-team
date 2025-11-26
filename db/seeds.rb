@@ -114,60 +114,53 @@ end
 
 puts "Created #{Pack.count} packs"
 
-# Create demo users with teams and cards (only in development)
+# Create demo user with team and cards (only in development)
 if Rails.env.development?
-  puts "Creating demo users..."
+  puts "Creating demo user..."
   
-  demo_users = [
-    { email: "player1@example.com", username: "ProGamer1" },
-    { email: "player2@example.com", username: "SC2Master" },
-    { email: "player3@example.com", username: "ZergRush" },
-    { email: "player4@example.com", username: "ProtossPrime" }
+  user = User.find_or_create_by!(email_address: "player@example.com") do |u|
+    u.password = "password123"
+    u.username = "Commander"
+    u.credits = 2000
+  end
+  
+  # Give user some random cards
+  if user.user_cards.empty?
+    Card.order("RANDOM()").limit(10).each_with_index do |card, index|
+      user.user_cards.create!(
+        card: card,
+        is_starter: index < 5,
+        position: index < 5 ? index + 1 : nil
+      )
+    end
+  end
+  
+  # Create team if doesn't exist
+  if user.teams.empty?
+    user.teams.create!(name: "Team Commander")
+  end
+  
+  puts "  Created user: #{user.email_address} with #{user.user_cards.count} cards"
+
+  # Create CPU teams for Cup Rush
+  puts "Creating CPU teams..."
+  cpu_team_names = [
+    "Koprulu Marines",
+    "Aiur Guardians", 
+    "Swarm Collective",
+    "Dominion Elite",
+    "Dark Templar",
+    "Overmind's Fury",
+    "Raynor's Raiders"
   ]
   
-  demo_users.each do |user_data|
-    user = User.find_or_create_by!(email_address: user_data[:email]) do |u|
-      u.password = "password123"
-      u.username = user_data[:username]
-      u.credits = 2000
-    end
-    
-    # Give each user some random cards
-    if user.user_cards.empty?
-      Card.order("RANDOM()").limit(10).each_with_index do |card, index|
-        user.user_cards.create!(
-          card: card,
-          is_starter: index < 5,
-          position: index < 5 ? index + 1 : nil
-        )
-      end
-    end
-    
-    # Create team if doesn't exist
-    if user.teams.empty?
-      user.teams.create!(name: "Team #{user.username}")
-    end
-    
-    puts "  Created user: #{user.email_address} with #{user.user_cards.count} cards"
+  cpu_team_names.each do |name|
+    next if Team.exists?(name: name)
+    Team.create!(name: name, is_cpu: true, rating: rand(900..1100))
+    puts "  Created CPU team: #{name}"
   end
   
-  # Create a sample league
-  if League.count == 0
-    puts "Creating sample league..."
-    league = League.create!(
-      name: "Season 1 Cup Rush",
-      max_teams: 8,
-      status: "pending"
-    )
-    
-    User.all.each do |user|
-      team = user.active_team
-      next unless team
-      league.league_memberships.create!(team: team)
-    end
-    
-    puts "Created league with #{league.teams.count} teams"
-  end
+  puts "CPU teams ready for Cup Rush - leagues auto-created when you start playing!"
 end
 
 puts "✅ Seeding complete!"

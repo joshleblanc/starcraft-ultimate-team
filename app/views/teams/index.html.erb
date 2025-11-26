@@ -39,7 +39,7 @@
               <%= team.name %>
             <% end %>
           </td>
-          <td class="px-4 py-3 text-gray-400"><%= team.user.display_name %></td>
+          <td class="px-4 py-3 text-gray-400"><%= team.user&.display_name || "CPU" %></td>
           <td class="px-4 py-3 text-center text-white"><%= team.wins %>-<%= team.losses %></td>
           <td class="px-4 py-3 text-center text-white"><%= team.win_rate %>%</td>
           <td class="px-4 py-3 text-center">

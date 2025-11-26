@@ -1,5 +1,6 @@
 class UserCard < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, optional: true
+  belongs_to :team, optional: true
   belongs_to :card
 
   has_many :lineup_slots, dependent: :destroy
@@ -10,7 +11,11 @@ class UserCard < ApplicationRecord
   scope :bench, -> { where(is_starter: false) }
 
   validates :position, numericality: { in: 1..5 }, allow_nil: true
-  validates :position, uniqueness: { scope: [:user_id, :is_starter] }, if: :is_starter?
+  validate :has_owner
+
+  def has_owner
+    errors.add(:base, "Must belong to a user or team") unless user_id.present? || team_id.present?
+  end
 
   delegate :name, :race, :rarity, :macro, :micro, :starsense, :poise, :speed,
            :early_game, :mid_game, :late_game, :overall_rating, :effective_stats_for_phase,

@@ -7,6 +7,11 @@ Rails.application.routes.draw do
   # Dashboard
   root "dashboard#show"
 
+  # Cup Rush (Single Player)
+  resource :cup_rush, only: [:show], controller: "cup_rush" do
+    post :new_season
+  end
+
   # Cards & Collection
   resources :cards, only: [:index, :show] do
     member do

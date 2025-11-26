@@ -1,9 +1,9 @@
-class Game < ApplicationRecord
+class Game < ApplicationRecord  
   STATUSES = %w[pending in_progress completed].freeze
   PHASES = %w[early mid late].freeze
   PHASE_RESULTS = %w[home away even].freeze
 
-  belongs_to :match
+  belongs_to :match, touch: true
   belongs_to :home_player, class_name: "UserCard"
   belongs_to :away_player, class_name: "UserCard"
   belongs_to :winner_player, class_name: "UserCard", optional: true
@@ -14,6 +14,10 @@ class Game < ApplicationRecord
 
   scope :pending, -> { where(status: "pending") }
   scope :completed, -> { where(status: "completed") }
+
+  def completed?
+    status == "completed"
+  end
 
   def simulate!
     return false unless status == "pending"

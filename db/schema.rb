@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_26_001600) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_26_001701) do
   create_table "cards", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "early_game", default: 0, null: false
@@ -202,11 +202,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_001600) do
 
   create_table "teams", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "is_cpu", default: false, null: false
     t.integer "losses", default: 0
     t.string "name", null: false
     t.integer "rating", default: 1000
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.integer "user_id"
     t.integer "wins", default: 0
     t.index ["rating"], name: "index_teams_on_rating"
     t.index ["user_id"], name: "index_teams_on_user_id"
@@ -217,9 +218,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_001600) do
     t.datetime "created_at", null: false
     t.boolean "is_starter", default: false
     t.integer "position"
+    t.integer "team_id"
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.integer "user_id"
     t.index ["card_id"], name: "index_user_cards_on_card_id"
+    t.index ["team_id"], name: "index_user_cards_on_team_id"
     t.index ["user_id", "is_starter"], name: "index_user_cards_on_user_id_and_is_starter"
     t.index ["user_id"], name: "index_user_cards_on_user_id"
   end
@@ -255,5 +258,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_001600) do
   add_foreign_key "sessions", "users"
   add_foreign_key "teams", "users"
   add_foreign_key "user_cards", "cards"
+  add_foreign_key "user_cards", "teams"
   add_foreign_key "user_cards", "users"
 end

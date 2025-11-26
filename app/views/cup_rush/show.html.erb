@@ -1,0 +1,174 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="text-center mb-8">
+    <h1 class="text-4xl font-bold text-white mb-2">🏆 Cup Rush</h1>
+    <p class="text-gray-400">Season <%= @league.id %> • Round <%= @league.current_round %> of <%= @league.total_rounds %></p>
+  </div>
+
+  <!-- Your Team Stats -->
+  <div class="rounded-xl bg-gradient-to-r from-cyan-900/50 to-purple-900/50 border border-cyan-700 p-6 mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-sm text-cyan-400 mb-1">Your Team</div>
+        <div class="text-2xl font-bold text-white"><%= @team.name %></div>
+      </div>
+      <div class="flex items-center gap-8 text-center">
+        <div>
+          <div class="text-2xl font-bold text-white"><%= @membership.match_wins %></div>
+          <div class="text-xs text-gray-400">Wins</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-white"><%= @membership.match_losses %></div>
+          <div class="text-xs text-gray-400">Losses</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-purple-400"><%= @membership.points %></div>
+          <div class="text-xs text-gray-400">Points</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-yellow-400">#<%= @standings.index(@membership).to_i + 1 %></div>
+          <div class="text-xs text-gray-400">Rank</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Next Match -->
+  <% if @next_match %>
+    <div class="rounded-xl bg-gray-800 border border-gray-700 p-6 mb-8">
+      <div class="text-sm text-gray-400 mb-4">Next Match • Round <%= @next_match.round %></div>
+      
+      <div class="flex items-center justify-center gap-8 mb-6">
+        <div class="text-center">
+          <div class="text-xl font-bold text-cyan-400"><%= @team.name %></div>
+          <div class="text-sm text-gray-500">You</div>
+        </div>
+        
+        <div class="text-center">
+          <% if @next_match.in_progress? || @next_match.status == "lineup_submitted" %>
+            <div class="text-3xl font-bold">
+              <span class="text-white"><%= @next_match.home_score %></span>
+              <span class="text-gray-500 mx-2">-</span>
+              <span class="text-white"><%= @next_match.away_score %></span>
+            </div>
+          <% else %>
+            <div class="text-3xl font-bold text-gray-500">VS</div>
+          <% end %>
+        </div>
+        
+        <div class="text-center">
+          <div class="text-xl font-bold text-white"><%= @next_match.opponent_for(@team).name %></div>
+          <div class="text-sm text-gray-500">🤖 CPU</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-center gap-4">
+        <% if @next_match.status == "pending" %>
+          <%= link_to lineup_match_path(@next_match), class: "rounded-lg bg-cyan-600 px-8 py-3 font-bold text-white hover:bg-cyan-500 transition-colors" do %>
+            📋 Set Lineup & Play
+          <% end %>
+        <% elsif @next_match.status == "lineup_submitted" || @next_match.status == "in_progress" %>
+          <%= button_to simulate_match_path(@next_match), class: "rounded-lg bg-yellow-600 px-6 py-3 font-bold text-white hover:bg-yellow-500 transition-colors" do %>
+            ⚡ Simulate Next Game
+          <% end %>
+          <%= button_to simulate_all_match_path(@next_match), class: "rounded-lg bg-purple-600 px-6 py-3 font-bold text-white hover:bg-purple-500 transition-colors" do %>
+            🚀 Simulate All
+          <% end %>
+          <%= link_to @next_match, class: "rounded-lg bg-gray-700 px-6 py-3 font-bold text-white hover:bg-gray-600 transition-colors" do %>
+            📊 View Details
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% elsif @league.completed? %>
+    <div class="rounded-xl bg-gradient-to-r from-yellow-900/50 to-orange-900/50 border border-yellow-600 p-8 mb-8 text-center">
+      <div class="text-5xl mb-4">🏆</div>
+      <h2 class="text-2xl font-bold text-white mb-2">Season Complete!</h2>
+      <p class="text-gray-400 mb-6">
+        <% if @standings.first == @membership %>
+          Congratulations! You won the Cup Rush!
+        <% else %>
+          You finished #<%= @standings.index(@membership).to_i + 1 %> out of <%= @standings.size %>
+        <% end %>
+      </p>
+      <%= button_to new_season_cup_rush_path, class: "rounded-lg bg-cyan-600 px-8 py-3 font-bold text-white hover:bg-cyan-500 transition-colors" do %>
+        🔄 Start New Season
+      <% end %>
+    </div>
+  <% else %>
+    <div class="rounded-xl bg-gray-800 border border-gray-700 p-8 mb-8 text-center">
+      <div class="text-4xl mb-4">⏳</div>
+      <h2 class="text-xl font-bold text-white mb-2">Waiting for next round</h2>
+      <p class="text-gray-400">Check back soon for your next match!</p>
+    </div>
+  <% end %>
+
+  <!-- Standings -->
+  <div class="rounded-xl bg-gray-800 border border-gray-700 overflow-hidden mb-8">
+    <div class="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
+      <h2 class="font-semibold text-white">📊 Standings</h2>
+    </div>
+    <table class="w-full">
+      <thead class="bg-gray-700/50 text-xs text-gray-400 uppercase">
+        <tr>
+          <th class="px-4 py-2 text-left">#</th>
+          <th class="px-4 py-2 text-left">Team</th>
+          <th class="px-4 py-2 text-center">W</th>
+          <th class="px-4 py-2 text-center">L</th>
+          <th class="px-4 py-2 text-center">Pts</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-700">
+        <% @standings.each_with_index do |membership, index| %>
+          <tr class="<%= membership.team == @team ? 'bg-cyan-900/30' : '' %>">
+            <td class="px-4 py-3">
+              <span class="<%= index < 3 ? 'text-yellow-400 font-bold' : 'text-gray-400' %>">
+                <%= index == 0 ? '🥇' : index == 1 ? '🥈' : index == 2 ? '🥉' : index + 1 %>
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="font-semibold <%= membership.team == @team ? 'text-cyan-400' : 'text-white' %>">
+                <%= membership.team.name %>
+                <% if membership.team == @team %><span class="text-xs text-gray-500">(You)</span><% end %>
+                <% if membership.team.is_cpu? && membership.team != @team %><span class="text-xs text-gray-500">🤖</span><% end %>
+              </span>
+            </td>
+            <td class="px-4 py-3 text-center text-green-400"><%= membership.match_wins %></td>
+            <td class="px-4 py-3 text-center text-red-400"><%= membership.match_losses %></td>
+            <td class="px-4 py-3 text-center text-purple-400 font-bold"><%= membership.points %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Recent Matches -->
+  <% if @recent_matches.any? %>
+    <div class="rounded-xl bg-gray-800 border border-gray-700 overflow-hidden">
+      <div class="px-4 py-3 border-b border-gray-700">
+        <h2 class="font-semibold text-white">📜 Recent Results</h2>
+      </div>
+      <div class="divide-y divide-gray-700">
+        <% @recent_matches.each do |match| %>
+          <%= link_to match, class: "block p-4 hover:bg-gray-700/50 transition-colors" do %>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-500">R<%= match.round %></span>
+                <span class="font-semibold text-white">vs <%= match.opponent_for(@team).name %></span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="font-bold <%= match.winner_team == @team ? 'text-green-400' : 'text-red-400' %>">
+                  <%= match.team_score(@team) %> - <%= match.team_score(match.opponent_for(@team)) %>
+                </span>
+                <span class="px-2 py-1 rounded text-xs font-semibold <%= match.winner_team == @team ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400' %>">
+                  <%= match.winner_team == @team ? 'W' : 'L' %>
+                </span>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

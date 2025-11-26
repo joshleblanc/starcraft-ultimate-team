@@ -48,6 +48,11 @@ class League < ApplicationRecord
     league_memberships.includes(:team).order(points: :desc, game_wins: :desc)
   end
 
+  def total_rounds
+    # Round-robin: each team plays every other team once
+    teams.count - 1
+  end
+
   def current_round_matches
     matches.where(round: current_round)
   end

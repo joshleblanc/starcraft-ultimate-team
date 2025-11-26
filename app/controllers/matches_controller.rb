@@ -50,6 +50,8 @@ class MatchesController < ApplicationController
     end
 
     if @lineup.complete? && @lineup.submit!
+      # Auto-submit CPU opponent's lineup
+      @match.ensure_cpu_lineups!
       redirect_to @match, notice: "Lineup submitted!"
     else
       redirect_to lineup_match_path(@match), alert: "Please select 5 players for your lineup."
@@ -70,7 +72,6 @@ class MatchesController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to @match }
-      format.turbo_stream
     end
   end
 

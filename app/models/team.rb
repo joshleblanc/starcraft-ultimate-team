@@ -1,5 +1,6 @@
 class Team < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, optional: true
+  has_many :cpu_cards, class_name: "UserCard", dependent: :destroy
 
   has_many :league_memberships, dependent: :destroy
   has_many :leagues, through: :league_memberships
@@ -8,6 +9,12 @@ class Team < ApplicationRecord
   has_many :lineups, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 50 }
+  validates :user, presence: true, unless: :is_cpu?
+
+  scope :cpu, -> { where(is_cpu: true) }
+  scope :human, -> { where(is_cpu: false) }
+
+  after_create :generate_cpu_roster, if: :is_cpu?
 
   def matches
     Match.where("home_team_id = ? OR away_team_id = ?", id, id)
@@ -33,10 +40,63 @@ class Team < ApplicationRecord
   end
 
   def starters
-    user.user_cards.starters
+    is_cpu? ? cpu_cards.starters : user.user_cards.starters
+  end
+
+  def available_cards
+    is_cpu? ? cpu_cards : user.user_cards
+  end
+
+  def auto_submit_lineup_for!(match)
+    return unless is_cpu?
+
+    lineup = match.lineups.find_or_create_by!(team: self)
+    lineup.lineup_slots.destroy_all
+
+    # Pick top 5 cards by overall rating
+    top_cards = cpu_cards.joins(:card).order("cards.overall_rating DESC").limit(5)
+    top_cards.each_with_index do |user_card, index|
+      lineup.lineup_slots.create!(user_card: user_card, position: index + 1)
+    end
+
+    lineup.update!(submitted: true)
   end
 
   private
+
+  def generate_cpu_roster
+    # Give CPU team 8 random cards weighted toward their skill level
+    skill_tier = %w[low mid high].sample
+    8.times do |i|
+      card = pick_card_for_tier(skill_tier)
+      cpu_cards.create!(
+        card: card,
+        is_starter: i < 5,
+        position: i < 5 ? i + 1 : nil
+      )
+    end
+  end
+
+  def pick_card_for_tier(tier)
+    weights = case tier
+              when "high" then { legendary: 20, epic: 40, rare: 30, common: 10 }
+              when "mid" then { legendary: 5, epic: 20, rare: 40, common: 35 }
+              else { legendary: 2, epic: 8, rare: 30, common: 60 }
+              end
+
+    roll = rand(100)
+    rarity = if roll < weights[:legendary]
+               "legendary"
+             elsif roll < weights[:legendary] + weights[:epic]
+               "epic"
+             elsif roll < weights[:legendary] + weights[:epic] + weights[:rare]
+               "rare"
+             else
+               "common"
+             end
+
+    Card.where(rarity: rarity).order("RANDOM()").first || Card.order("RANDOM()").first
+  end
 
   def update_rating(won)
     k_factor = 32
