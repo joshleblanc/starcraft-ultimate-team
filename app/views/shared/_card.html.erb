@@ -1,0 +1,72 @@
+<% card = user_card.card %>
+<div class="rounded-xl overflow-hidden border-2 transition-all hover:scale-105 hover:shadow-lg hover:shadow-<%= card.rarity == 'legendary' ? 'yellow' : card.rarity == 'epic' ? 'purple' : card.rarity == 'rare' ? 'blue' : 'gray' %>-500/20"
+     style="border-color: <%= card.rarity_color %>; background: linear-gradient(135deg, #1f2937 0%, #111827 100%);">
+  
+  <!-- Card Header -->
+  <div class="p-3 text-center" style="background: linear-gradient(180deg, <%= card.rarity_color %>22 0%, transparent 100%);">
+    <div class="text-3xl mb-1"><%= card.race_icon %></div>
+    <div class="font-bold text-white truncate"><%= card.name %></div>
+    <div class="text-xs text-gray-400"><%= card.race %></div>
+  </div>
+  
+  <!-- Overall Rating -->
+  <div class="flex justify-center -mt-2 mb-2">
+    <div class="flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold"
+         style="background: <%= card.rarity_color %>; color: #111827;">
+      <%= card.overall_rating %>
+    </div>
+  </div>
+  
+  <!-- Stats Grid -->
+  <div class="px-3 pb-3 grid grid-cols-2 gap-1 text-xs">
+    <div class="flex justify-between bg-gray-800/50 rounded px-2 py-1">
+      <span class="text-gray-400">MAC</span>
+      <span class="font-semibold text-white"><%= card.macro %></span>
+    </div>
+    <div class="flex justify-between bg-gray-800/50 rounded px-2 py-1">
+      <span class="text-gray-400">MIC</span>
+      <span class="font-semibold text-white"><%= card.micro %></span>
+    </div>
+    <div class="flex justify-between bg-gray-800/50 rounded px-2 py-1">
+      <span class="text-gray-400">SNS</span>
+      <span class="font-semibold text-white"><%= card.starsense %></span>
+    </div>
+    <div class="flex justify-between bg-gray-800/50 rounded px-2 py-1">
+      <span class="text-gray-400">POI</span>
+      <span class="font-semibold text-white"><%= card.poise %></span>
+    </div>
+    <div class="flex justify-between bg-gray-800/50 rounded px-2 py-1 col-span-2">
+      <span class="text-gray-400">SPD</span>
+      <span class="font-semibold text-white"><%= card.speed %></span>
+    </div>
+  </div>
+  
+  <!-- Game Phase Modifiers -->
+  <div class="px-3 pb-3 flex justify-between text-xs">
+    <div class="text-center">
+      <div class="text-gray-500">Early</div>
+      <div class="font-semibold <%= card.early_game > 0 ? 'text-green-400' : card.early_game < 0 ? 'text-red-400' : 'text-gray-400' %>">
+        <%= card.early_game > 0 ? '+' : '' %><%= card.early_game %>
+      </div>
+    </div>
+    <div class="text-center">
+      <div class="text-gray-500">Mid</div>
+      <div class="font-semibold <%= card.mid_game > 0 ? 'text-green-400' : card.mid_game < 0 ? 'text-red-400' : 'text-gray-400' %>">
+        <%= card.mid_game > 0 ? '+' : '' %><%= card.mid_game %>
+      </div>
+    </div>
+    <div class="text-center">
+      <div class="text-gray-500">Late</div>
+      <div class="font-semibold <%= card.late_game > 0 ? 'text-green-400' : card.late_game < 0 ? 'text-red-400' : 'text-gray-400' %>">
+        <%= card.late_game > 0 ? '+' : '' %><%= card.late_game %>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Rarity Badge -->
+  <div class="text-center pb-2">
+    <span class="text-xs font-semibold uppercase tracking-wider" style="color: <%= card.rarity_color %>">
+      <%= card.rarity %>
+    </span>
+  </div>
+</div>

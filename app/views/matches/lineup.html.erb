@@ -1,0 +1,58 @@
+<%= link_to "← Back to Match", @match, class: "text-cyan-400 hover:text-cyan-300 mb-4 inline-block" %>
+
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-white">📋 Set Your Lineup</h1>
+  <p class="mt-2 text-gray-400">
+    vs <%= @match.opponent_for(@team).name %> • <%= @match.league.name %> Round <%= @match.round %>
+  </p>
+</div>
+
+<%= form_with url: submit_lineup_match_path(@match), method: :post, local: true do |f| %>
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+    <!-- Lineup Slots -->
+    <div>
+      <h2 class="text-xl font-bold text-white mb-4">Your Lineup (5 players)</h2>
+      <div class="space-y-3">
+        <% (1..5).each do |position| %>
+          <div class="rounded-xl bg-gray-800 border border-gray-700 p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-gray-400">Position <%= position %></span>
+              <% if slot = @current_slots[position] %>
+                <span class="text-xs text-cyan-400"><%= slot.user_card.name %></span>
+              <% end %>
+            </div>
+            <%= f.select "lineup[players][]", 
+                options_from_collection_for_select(@available_cards, :id, ->(uc) { "#{uc.card.race_icon} #{uc.name} (#{uc.overall_rating})" }, @current_slots[position]&.user_card_id),
+                { include_blank: "Select a player..." },
+                class: "w-full rounded-md bg-gray-700 border border-gray-600 px-3 py-2 text-white" %>
+          </div>
+        <% end %>
+      </div>
+      
+      <div class="mt-6">
+        <%= f.submit "Submit Lineup", class: "w-full rounded-md bg-cyan-600 px-6 py-3 font-bold text-white hover:bg-cyan-500 cursor-pointer" %>
+      </div>
+    </div>
+    
+    <!-- Available Cards Reference -->
+    <div>
+      <h2 class="text-xl font-bold text-white mb-4">Your Cards</h2>
+      <div class="grid grid-cols-2 gap-3 max-h-[600px] overflow-y-auto">
+        <% @available_cards.order("cards.overall_rating DESC").includes(:card).each do |user_card| %>
+          <div class="rounded-lg bg-gray-800 border border-gray-700 p-3">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-lg"><%= user_card.race_icon %></span>
+              <span class="font-semibold text-white text-sm truncate"><%= user_card.name %></span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="px-1.5 py-0.5 rounded font-semibold" style="background: <%= user_card.rarity_color %>; color: #111;">
+                <%= user_card.overall_rating %>
+              </span>
+              <span class="text-gray-500"><%= user_card.rarity.capitalize %></span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

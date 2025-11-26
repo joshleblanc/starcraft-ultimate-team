@@ -1,0 +1,60 @@
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-white">⚔️ My Matches</h1>
+  <p class="mt-2 text-gray-400">View and play your scheduled matches</p>
+</div>
+
+<% unless @team %>
+  <div class="rounded-xl bg-gray-800 border border-gray-700 p-8 text-center">
+    <div class="text-4xl mb-4">👥</div>
+    <h3 class="text-lg font-semibold text-white mb-2">No team yet</h3>
+    <p class="text-gray-400 mb-4">Create a team to start playing matches.</p>
+    <%= link_to "Create Team", new_team_path, class: "inline-flex items-center px-4 py-2 rounded-md bg-cyan-600 text-white font-semibold hover:bg-cyan-500" %>
+  </div>
+<% else %>
+
+  <!-- In Progress Matches -->
+  <% if @in_progress_matches.any? %>
+    <div class="mb-8">
+      <h2 class="text-xl font-bold text-yellow-400 mb-4">🔥 In Progress</h2>
+      <div class="space-y-3">
+        <% @in_progress_matches.each do |match| %>
+          <%= render "match_card", match: match, my_team: @team %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Pending Matches -->
+  <% if @pending_matches.any? %>
+    <div class="mb-8">
+      <h2 class="text-xl font-bold text-white mb-4">📅 Upcoming Matches</h2>
+      <div class="space-y-3">
+        <% @pending_matches.each do |match| %>
+          <%= render "match_card", match: match, my_team: @team %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Completed Matches -->
+  <% if @completed_matches.any? %>
+    <div>
+      <h2 class="text-xl font-bold text-gray-400 mb-4">✅ Completed</h2>
+      <div class="space-y-3">
+        <% @completed_matches.each do |match| %>
+          <%= render "match_card", match: match, my_team: @team %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @pending_matches.empty? && @in_progress_matches.empty? && @completed_matches.empty? %>
+    <div class="rounded-xl bg-gray-800 border border-gray-700 p-8 text-center">
+      <div class="text-4xl mb-4">📅</div>
+      <h3 class="text-lg font-semibold text-white mb-2">No matches yet</h3>
+      <p class="text-gray-400 mb-4">Join a league to start playing matches.</p>
+      <%= link_to "Browse Leagues", leagues_path, class: "inline-flex items-center px-4 py-2 rounded-md bg-cyan-600 text-white font-semibold hover:bg-cyan-500" %>
+    </div>
+  <% end %>
+
+<% end %>

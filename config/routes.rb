@@ -1,17 +1,62 @@
 Rails.application.routes.draw do
+  # Authentication
   resource :session
   resource :registration, only: %i[new create]
   resources :passwords, param: :token
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Dashboard
+  root "dashboard#show"
+
+  # Cards & Collection
+  resources :cards, only: [:index, :show] do
+    member do
+      post :set_starter
+      delete :remove_starter
+    end
+  end
+
+  # Packs
+  resources :packs, only: [:index, :show] do
+    member do
+      post :open
+      get :opening
+    end
+  end
+
+  # Teams
+  resources :teams
+
+  # Cup Rush Leagues
+  resources :leagues do
+    member do
+      post :join
+      post :start
+    end
+  end
+
+  # Matches
+  resources :matches, only: [:index, :show] do
+    member do
+      get :lineup
+      post :submit_lineup
+      post :simulate
+      post :simulate_all
+    end
+  end
+
+  # Games
+  resources :games, only: [:show]
+
+  # Notifications
+  resources :notifications, only: [:index] do
+    member do
+      post :mark_as_read
+    end
+    collection do
+      post :mark_all_as_read
+    end
+  end
+
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end

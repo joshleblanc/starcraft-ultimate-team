@@ -1,0 +1,41 @@
+<div class="max-w-4xl mx-auto text-center">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-white">🎉 Pack Opened!</h1>
+    <p class="mt-2 text-gray-400">You opened a <%= @pack.name %></p>
+  </div>
+
+  <!-- Cards Reveal -->
+  <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 mb-8">
+    <% @recent_cards.each_with_index do |user_card, index| %>
+      <div class="animate-bounce" style="animation-delay: <%= index * 100 %>ms; animation-duration: 0.5s; animation-iteration-count: 1;">
+        <%= render "shared/card", user_card: user_card %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Summary -->
+  <div class="rounded-xl bg-gray-800 border border-gray-700 p-6 mb-8">
+    <h3 class="text-lg font-semibold text-white mb-4">Pack Summary</h3>
+    <div class="flex justify-center gap-6">
+      <% rarities = @recent_cards.group_by { |uc| uc.card.rarity } %>
+      <% %w[legendary epic rare common].each do |rarity| %>
+        <% count = rarities[rarity]&.count || 0 %>
+        <% next if count == 0 %>
+        <div class="text-center">
+          <div class="text-2xl font-bold" style="color: <%= Card.new(rarity: rarity).rarity_color %>"><%= count %></div>
+          <div class="text-xs text-gray-400 uppercase"><%= rarity %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex justify-center gap-4">
+    <%= link_to packs_path, class: "rounded-md bg-cyan-600 px-6 py-3 font-semibold text-white hover:bg-cyan-500" do %>
+      📦 Open Another Pack
+    <% end %>
+    <%= link_to cards_path, class: "rounded-md bg-gray-700 px-6 py-3 font-semibold text-white hover:bg-gray-600" do %>
+      🎴 View Collection
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,116 @@
+<div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+  <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-800 px-6 pb-4 border-r border-gray-700">
+    <div class="flex h-16 shrink-0 items-center">
+      <span class="text-xl font-bold text-cyan-400">⚡ SC2 Ultimate Team</span>
+    </div>
+    
+    <nav class="flex flex-1 flex-col">
+      <ul role="list" class="flex flex-1 flex-col gap-y-7">
+        <li>
+          <ul role="list" class="-mx-2 space-y-1">
+            <li>
+              <%= link_to root_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 #{request.path == root_path ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}" do %>
+                <span class="text-lg">🏠</span>
+                Dashboard
+              <% end %>
+            </li>
+            <li>
+              <%= link_to cards_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 #{request.path.start_with?('/cards') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}" do %>
+                <span class="text-lg">🎴</span>
+                My Cards
+              <% end %>
+            </li>
+            <li>
+              <%= link_to packs_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 #{request.path.start_with?('/packs') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}" do %>
+                <span class="text-lg">📦</span>
+                Open Packs
+              <% end %>
+            </li>
+          </ul>
+        </li>
+        
+        <li>
+          <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wider">Cup Rush</div>
+          <ul role="list" class="-mx-2 mt-2 space-y-1">
+            <li>
+              <%= link_to teams_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 #{request.path.start_with?('/teams') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}" do %>
+                <span class="text-lg">👥</span>
+                Teams
+              <% end %>
+            </li>
+            <li>
+              <%= link_to leagues_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 #{request.path.start_with?('/leagues') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}" do %>
+                <span class="text-lg">🏆</span>
+                Leagues
+              <% end %>
+            </li>
+            <li>
+              <%= link_to matches_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 #{request.path.start_with?('/matches') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}" do %>
+                <span class="text-lg">⚔️</span>
+                Matches
+              <% end %>
+            </li>
+          </ul>
+        </li>
+
+        <li class="mt-auto">
+          <div class="flex items-center gap-x-4 py-3 text-sm font-semibold leading-6 text-white">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-700 text-sm font-medium text-gray-300">
+              <%= current_user.display_name[0].upcase %>
+            </span>
+            <div class="flex-1">
+              <div class="truncate"><%= current_user.display_name %></div>
+              <div class="text-xs text-yellow-400">💰 <%= number_with_delimiter(current_user.credits) %> credits</div>
+            </div>
+            <%= link_to notifications_path, class: "relative" do %>
+              <span class="text-lg">🔔</span>
+              <% if current_user.unread_notifications_count > 0 %>
+                <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs"><%= current_user.unread_notifications_count %></span>
+              <% end %>
+            <% end %>
+          </div>
+          <%= button_to "Sign Out", session_path, method: :delete, class: "w-full mt-2 rounded-md bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-600" %>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Mobile menu button -->
+<div class="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-800 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+  <span class="text-xl font-bold text-cyan-400">⚡ SC2 UT</span>
+  <div class="flex-1"></div>
+  <span class="text-yellow-400 text-sm">💰 <%= number_with_delimiter(current_user.credits) %></span>
+  <%= link_to notifications_path, class: "relative ml-4" do %>
+    <span class="text-lg">🔔</span>
+    <% if current_user.unread_notifications_count > 0 %>
+      <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs"><%= current_user.unread_notifications_count %></span>
+    <% end %>
+  <% end %>
+</div>
+
+<!-- Mobile navigation -->
+<div class="fixed bottom-0 left-0 right-0 z-40 bg-gray-800 border-t border-gray-700 lg:hidden">
+  <nav class="flex justify-around py-2">
+    <%= link_to root_path, class: "flex flex-col items-center px-3 py-2 text-xs #{request.path == root_path ? 'text-cyan-400' : 'text-gray-400'}" do %>
+      <span class="text-xl">🏠</span>
+      <span>Home</span>
+    <% end %>
+    <%= link_to cards_path, class: "flex flex-col items-center px-3 py-2 text-xs #{request.path.start_with?('/cards') ? 'text-cyan-400' : 'text-gray-400'}" do %>
+      <span class="text-xl">🎴</span>
+      <span>Cards</span>
+    <% end %>
+    <%= link_to packs_path, class: "flex flex-col items-center px-3 py-2 text-xs #{request.path.start_with?('/packs') ? 'text-cyan-400' : 'text-gray-400'}" do %>
+      <span class="text-xl">📦</span>
+      <span>Packs</span>
+    <% end %>
+    <%= link_to leagues_path, class: "flex flex-col items-center px-3 py-2 text-xs #{request.path.start_with?('/leagues') ? 'text-cyan-400' : 'text-gray-400'}" do %>
+      <span class="text-xl">🏆</span>
+      <span>Leagues</span>
+    <% end %>
+    <%= link_to matches_path, class: "flex flex-col items-center px-3 py-2 text-xs #{request.path.start_with?('/matches') ? 'text-cyan-400' : 'text-gray-400'}" do %>
+      <span class="text-xl">⚔️</span>
+      <span>Matches</span>
+    <% end %>
+  </nav>
+</div>

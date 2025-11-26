@@ -1,0 +1,139 @@
+<%= link_to "← Back to Leagues", leagues_path, class: "text-cyan-400 hover:text-cyan-300 mb-4 inline-block" %>
+
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-3xl font-bold text-white"><%= @league.name %></h1>
+    <div class="mt-2 flex items-center gap-4">
+      <span class="px-3 py-1 rounded-full text-sm font-semibold 
+        <%= @league.status == 'active' ? 'bg-green-500/20 text-green-400' : 
+            @league.status == 'completed' ? 'bg-gray-500/20 text-gray-400' : 
+            'bg-yellow-500/20 text-yellow-400' %>">
+        <%= @league.status.capitalize %>
+      </span>
+      <% if @league.active? %>
+        <span class="text-gray-400">Round <%= @league.current_round %> of <%= @league.total_rounds %></span>
+      <% end %>
+    </div>
+  </div>
+  
+  <% if @league.status == "pending" && @league.can_start? && @league.teams.any? { |t| t.user == current_user } %>
+    <%= button_to "🚀 Start League", start_league_path(@league), class: "rounded-md bg-green-600 px-4 py-2 font-semibold text-white hover:bg-green-500" %>
+  <% end %>
+</div>
+
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+  <!-- Standings -->
+  <div class="lg:col-span-2">
+    <div class="rounded-xl bg-gray-800 border border-gray-700 overflow-hidden">
+      <div class="px-4 py-3 border-b border-gray-700">
+        <h2 class="font-semibold text-white">📊 Standings</h2>
+      </div>
+      <table class="w-full">
+        <thead class="bg-gray-700/50 text-sm text-gray-400">
+          <tr>
+            <th class="px-4 py-2 text-left">#</th>
+            <th class="px-4 py-2 text-left">Team</th>
+            <th class="px-4 py-2 text-center">M</th>
+            <th class="px-4 py-2 text-center">W</th>
+            <th class="px-4 py-2 text-center">L</th>
+            <th class="px-4 py-2 text-center">GD</th>
+            <th class="px-4 py-2 text-center">Pts</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700">
+          <% @standings.each_with_index do |membership, index| %>
+            <tr class="<%= membership.team == @my_team ? 'bg-cyan-900/20' : '' %> hover:bg-gray-700/50">
+              <td class="px-4 py-3">
+                <span class="<%= index < 3 ? 'text-yellow-400 font-bold' : 'text-gray-400' %>">
+                  <%= index == 0 ? '🥇' : index == 1 ? '🥈' : index == 2 ? '🥉' : (index + 1) %>
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                <%= link_to membership.team, class: "font-semibold #{membership.team == @my_team ? 'text-cyan-400' : 'text-white'} hover:underline" do %>
+                  <%= membership.team.name %>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-center text-gray-400"><%= membership.match_wins + membership.match_losses %></td>
+              <td class="px-4 py-3 text-center text-green-400"><%= membership.match_wins %></td>
+              <td class="px-4 py-3 text-center text-red-400"><%= membership.match_losses %></td>
+              <td class="px-4 py-3 text-center <%= membership.game_differential > 0 ? 'text-green-400' : membership.game_differential < 0 ? 'text-red-400' : 'text-gray-400' %>">
+                <%= membership.game_differential > 0 ? '+' : '' %><%= membership.game_differential %>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span class="px-2 py-1 rounded bg-purple-500/20 text-purple-400 font-bold"><%= membership.points %></span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <% if @standings.empty? %>
+        <div class="p-8 text-center text-gray-500">No teams in this league yet</div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- League Info & Current Round -->
+  <div class="space-y-6">
+    <!-- League Info -->
+    <div class="rounded-xl bg-gray-800 border border-gray-700 p-6">
+      <h3 class="font-semibold text-white mb-4">ℹ️ League Info</h3>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-400">Teams</span>
+          <span class="text-white"><%= @league.teams.count %>/<%= @league.max_teams %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400">Total Rounds</span>
+          <span class="text-white"><%= @league.total_rounds %></span>
+        </div>
+        <% if @league.started_at %>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Started</span>
+            <span class="text-white"><%= @league.started_at.strftime("%b %d, %Y") %></span>
+          </div>
+        <% end %>
+      </div>
+      
+      <% if @league.pending? && @my_team && !@league.teams.include?(@my_team) %>
+        <div class="mt-4">
+          <%= button_to "Join League", join_league_path(@league), class: "w-full rounded-md bg-cyan-600 px-4 py-2 font-semibold text-white hover:bg-cyan-500" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Current Round Matches -->
+    <% if @league.active? && @current_round_matches.any? %>
+      <div class="rounded-xl bg-gray-800 border border-gray-700 p-6">
+        <h3 class="font-semibold text-white mb-4">⚔️ Round <%= @league.current_round %> Matches</h3>
+        <div class="space-y-3">
+          <% @current_round_matches.each do |match| %>
+            <%= link_to match, class: "block rounded-lg bg-gray-700/50 p-3 hover:bg-gray-700" do %>
+              <div class="flex items-center justify-between text-sm">
+                <div class="flex-1 text-right <%= match.home_team == @my_team ? 'text-cyan-400 font-semibold' : 'text-white' %>">
+                  <%= match.home_team.name %>
+                </div>
+                <div class="px-3">
+                  <% if match.completed? %>
+                    <span class="font-bold text-white"><%= match.home_score %> - <%= match.away_score %></span>
+                  <% else %>
+                    <span class="text-gray-500">vs</span>
+                  <% end %>
+                </div>
+                <div class="flex-1 text-left <%= match.away_team == @my_team ? 'text-cyan-400 font-semibold' : 'text-white' %>">
+                  <%= match.away_team.name %>
+                </div>
+              </div>
+              <% unless match.completed? %>
+                <div class="text-center mt-1">
+                  <span class="text-xs px-2 py-0.5 rounded <%= match.status == 'in_progress' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-600 text-gray-400' %>">
+                    <%= match.status.humanize %>
+                  </span>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

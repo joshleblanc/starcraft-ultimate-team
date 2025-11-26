@@ -1,0 +1,117 @@
+<%= link_to "← Back to Matches", matches_path, class: "text-cyan-400 hover:text-cyan-300 mb-4 inline-block" %>
+
+<div class="mb-6">
+  <div class="text-sm text-gray-500 mb-2"><%= @match.league.name %> • Round <%= @match.round %></div>
+  <div class="flex items-center justify-center gap-8">
+    <div class="text-center">
+      <div class="text-2xl font-bold <%= @match.home_team == @my_team ? 'text-cyan-400' : 'text-white' %>"><%= @match.home_team.name %></div>
+      <div class="text-sm text-gray-500">Home</div>
+    </div>
+    <div class="text-center">
+      <div class="text-4xl font-bold">
+        <span class="<%= @match.home_score > @match.away_score ? 'text-green-400' : 'text-white' %>"><%= @match.home_score %></span>
+        <span class="text-gray-500 mx-2">-</span>
+        <span class="<%= @match.away_score > @match.home_score ? 'text-green-400' : 'text-white' %>"><%= @match.away_score %></span>
+      </div>
+      <div class="mt-2">
+        <span class="px-3 py-1 rounded-full text-sm font-semibold 
+          <%= @match.completed? ? (@match.winner_team == @my_team ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400') :
+              @match.status == 'in_progress' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-500/20 text-gray-400' %>">
+          <%= @match.completed? ? (@match.winner_team == @my_team ? 'Victory!' : 'Defeat') : @match.status.humanize %>
+        </span>
+      </div>
+    </div>
+    <div class="text-center">
+      <div class="text-2xl font-bold <%= @match.away_team == @my_team ? 'text-cyan-400' : 'text-white' %>"><%= @match.away_team.name %></div>
+      <div class="text-sm text-gray-500">Away</div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<% if @my_team && @match.is_participant?(@my_team) %>
+  <div class="flex justify-center gap-4 mb-8">
+    <% if @match.status == "pending" %>
+      <%= link_to lineup_match_path(@match), class: "rounded-md bg-cyan-600 px-6 py-2 font-semibold text-white hover:bg-cyan-500" do %>
+        📋 Set Lineup
+      <% end %>
+    <% elsif @match.status == "lineup_submitted" || @match.status == "in_progress" %>
+      <%= button_to simulate_match_path(@match), class: "rounded-md bg-yellow-600 px-6 py-2 font-semibold text-white hover:bg-yellow-500" do %>
+        ⚡ Simulate Next Game
+      <% end %>
+      <%= button_to simulate_all_match_path(@match), class: "rounded-md bg-purple-600 px-6 py-2 font-semibold text-white hover:bg-purple-500" do %>
+        🚀 Simulate All
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<!-- Games -->
+<div class="rounded-xl bg-gray-800 border border-gray-700 overflow-hidden">
+  <div class="px-4 py-3 border-b border-gray-700">
+    <h2 class="font-semibold text-white">🎮 Games (Best of 5)</h2>
+  </div>
+  
+  <% if @games.any? %>
+    <div class="divide-y divide-gray-700">
+      <% @games.each do |game| %>
+        <div class="p-4 <%= game.completed? ? '' : 'opacity-50' %>">
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-500">Game <%= game.game_number %></div>
+            <% if game.completed? %>
+              <span class="text-sm <%= game.winner_team == @my_team ? 'text-green-400' : 'text-red-400' %>">
+                <%= game.winner_team == @match.home_team ? 'Home' : 'Away' %> wins
+              </span>
+            <% else %>
+              <span class="text-sm text-gray-500">Pending</span>
+            <% end %>
+          </div>
+          
+          <div class="mt-3 flex items-center gap-4">
+            <!-- Home Player -->
+            <div class="flex-1 rounded-lg bg-gray-700/50 p-3 <%= game.winner_player == game.home_player ? 'ring-2 ring-green-500' : '' %>">
+              <div class="flex items-center gap-2">
+                <span class="text-lg"><%= game.home_player.race_icon %></span>
+                <span class="font-semibold text-white"><%= game.home_player.name %></span>
+                <span class="text-xs px-1.5 py-0.5 rounded" style="background: <%= game.home_player.rarity_color %>22; color: <%= game.home_player.rarity_color %>"><%= game.home_player.overall_rating %></span>
+              </div>
+            </div>
+            
+            <div class="text-gray-500">vs</div>
+            
+            <!-- Away Player -->
+            <div class="flex-1 rounded-lg bg-gray-700/50 p-3 <%= game.winner_player == game.away_player ? 'ring-2 ring-green-500' : '' %>">
+              <div class="flex items-center gap-2">
+                <span class="text-lg"><%= game.away_player.race_icon %></span>
+                <span class="font-semibold text-white"><%= game.away_player.name %></span>
+                <span class="text-xs px-1.5 py-0.5 rounded" style="background: <%= game.away_player.rarity_color %>22; color: <%= game.away_player.rarity_color %>"><%= game.away_player.overall_rating %></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Phase Results -->
+          <% if game.completed? %>
+            <div class="mt-3 flex justify-center gap-4 text-xs">
+              <% %w[early mid late].each do |phase| %>
+                <% result = game.send("#{phase}_game_result") %>
+                <div class="text-center">
+                  <div class="text-gray-500 capitalize"><%= phase %></div>
+                  <div class="font-semibold <%= result == 'home' ? 'text-blue-400' : result == 'away' ? 'text-red-400' : 'text-gray-400' %>">
+                    <%= result == 'even' ? 'Even' : result == 'home' ? '← Home' : 'Away →' %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+            <div class="mt-2 text-center text-xs text-gray-500">
+              Decided in <%= game.deciding_phase %> game
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="p-8 text-center text-gray-500">
+      Games will appear once both teams submit their lineups
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,108 @@
+<%= link_to "← Back to Teams", teams_path, class: "text-cyan-400 hover:text-cyan-300 mb-4 inline-block" %>
+
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+  <!-- Team Info -->
+  <div class="lg:col-span-1">
+    <div class="rounded-xl bg-gray-800 border border-gray-700 p-6">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 text-3xl font-bold">
+          <%= @team.name[0..1].upcase %>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-white"><%= @team.name %></h1>
+          <div class="text-gray-400">by <%= @team.user.display_name %></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="rounded-lg bg-gray-700/50 p-3 text-center">
+          <div class="text-2xl font-bold text-white"><%= @team.wins %>-<%= @team.losses %></div>
+          <div class="text-xs text-gray-400">Record</div>
+        </div>
+        <div class="rounded-lg bg-gray-700/50 p-3 text-center">
+          <div class="text-2xl font-bold text-green-400"><%= @team.win_rate %>%</div>
+          <div class="text-xs text-gray-400">Win Rate</div>
+        </div>
+        <div class="rounded-lg bg-gray-700/50 p-3 text-center col-span-2">
+          <div class="text-2xl font-bold text-purple-400"><%= @team.rating %></div>
+          <div class="text-xs text-gray-400">Rating</div>
+        </div>
+      </div>
+
+      <% if @team.user == current_user %>
+        <%= link_to edit_team_path(@team), class: "block w-full text-center rounded-md bg-gray-700 px-4 py-2 font-semibold text-white hover:bg-gray-600" do %>
+          ✏️ Edit Team
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- League Memberships -->
+    <% if @team.league_memberships.any? %>
+      <div class="mt-6 rounded-xl bg-gray-800 border border-gray-700 p-6">
+        <h3 class="font-semibold text-white mb-4">🏆 League History</h3>
+        <div class="space-y-2">
+          <% @team.league_memberships.includes(:league).each do |membership| %>
+            <%= link_to membership.league, class: "block rounded-lg bg-gray-700/50 p-3 hover:bg-gray-700" do %>
+              <div class="font-semibold text-white"><%= membership.league.name %></div>
+              <div class="text-sm text-gray-400">
+                <%= membership.match_wins %>-<%= membership.match_losses %> • <%= membership.points %> pts
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Recent Matches -->
+  <div class="lg:col-span-2">
+    <div class="rounded-xl bg-gray-800 border border-gray-700 overflow-hidden">
+      <div class="px-4 py-3 border-b border-gray-700">
+        <h2 class="font-semibold text-white">📊 Recent Matches</h2>
+      </div>
+      
+      <% if @recent_matches.any? %>
+        <div class="divide-y divide-gray-700">
+          <% @recent_matches.each do |match| %>
+            <%= link_to match, class: "block p-4 hover:bg-gray-700/50" do %>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div class="text-center">
+                    <div class="font-semibold <%= match.home_team == @team ? 'text-cyan-400' : 'text-white' %>">
+                      <%= match.home_team.name %>
+                    </div>
+                  </div>
+                  <div class="text-gray-500">vs</div>
+                  <div class="text-center">
+                    <div class="font-semibold <%= match.away_team == @team ? 'text-cyan-400' : 'text-white' %>">
+                      <%= match.away_team.name %>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <% if match.completed? %>
+                    <span class="text-lg font-bold <%= match.winner_team == @team ? 'text-green-400' : 'text-red-400' %>">
+                      <%= match.home_score %> - <%= match.away_score %>
+                    </span>
+                    <span class="ml-2 text-sm <%= match.winner_team == @team ? 'text-green-400' : 'text-red-400' %>">
+                      <%= match.winner_team == @team ? 'W' : 'L' %>
+                    </span>
+                  <% else %>
+                    <span class="text-yellow-400 text-sm"><%= match.status.humanize %></span>
+                  <% end %>
+                </div>
+              </div>
+              <div class="mt-2 text-xs text-gray-500">
+                <%= match.league.name %> • Round <%= match.round %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="p-8 text-center text-gray-500">
+          No matches played yet
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

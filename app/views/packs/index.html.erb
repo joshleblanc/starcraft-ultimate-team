@@ -1,0 +1,78 @@
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-white">📦 Pack Store</h1>
+  <p class="mt-2 text-gray-400">Open packs to add new players to your collection</p>
+  <div class="mt-4 text-lg">
+    <span class="text-yellow-400">💰 <%= number_with_delimiter(current_user.credits) %></span>
+    <span class="text-gray-500">credits available</span>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  <% @packs.each do |pack| %>
+    <div class="rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 overflow-hidden hover:border-cyan-500 transition-colors">
+      <!-- Pack Header -->
+      <div class="p-6 text-center bg-gradient-to-b from-<%= pack.pack_type == 'legendary' ? 'yellow' : pack.pack_type == 'premium' ? 'purple' : 'cyan' %>-500/20 to-transparent">
+        <div class="text-6xl mb-4">
+          <%= pack.pack_type == 'legendary' ? '🌟' : pack.pack_type == 'premium' ? '💎' : '📦' %>
+        </div>
+        <h3 class="text-xl font-bold text-white"><%= pack.name %></h3>
+        <p class="text-gray-400 text-sm mt-1"><%= pack.description %></p>
+      </div>
+      
+      <!-- Pack Info -->
+      <div class="p-4 space-y-4">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-400">Cards per pack:</span>
+          <span class="font-semibold text-white"><%= pack.card_count %></span>
+        </div>
+        
+        <!-- Probabilities -->
+        <div>
+          <div class="text-xs text-gray-500 mb-2">Drop rates:</div>
+          <div class="grid grid-cols-4 gap-1 text-xs text-center">
+            <% probs = pack.rarity_probabilities %>
+            <div class="rounded bg-gray-700/50 p-1">
+              <div style="color: #9ca3af">COM</div>
+              <div class="font-semibold text-white"><%= probs[:common] %>%</div>
+            </div>
+            <div class="rounded bg-gray-700/50 p-1">
+              <div style="color: #3b82f6">RAR</div>
+              <div class="font-semibold text-white"><%= probs[:rare] %>%</div>
+            </div>
+            <div class="rounded bg-gray-700/50 p-1">
+              <div style="color: #a855f7">EPC</div>
+              <div class="font-semibold text-white"><%= probs[:epic] %>%</div>
+            </div>
+            <div class="rounded bg-gray-700/50 p-1">
+              <div style="color: #f59e0b">LGD</div>
+              <div class="font-semibold text-white"><%= probs[:legendary] %>%</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Price & Buy Button -->
+        <div class="pt-2">
+          <% if current_user.can_afford?(pack.cost) %>
+            <%= button_to open_pack_path(pack), class: "w-full rounded-md bg-gradient-to-r from-cyan-600 to-purple-600 px-4 py-3 font-bold text-white hover:from-cyan-500 hover:to-purple-500 transition-all" do %>
+              <span class="text-lg">💰 <%= number_with_delimiter(pack.cost) %></span>
+              <span class="block text-sm opacity-80">Open Pack</span>
+            <% end %>
+          <% else %>
+            <button disabled class="w-full rounded-md bg-gray-700 px-4 py-3 font-bold text-gray-500 cursor-not-allowed">
+              <span class="text-lg">💰 <%= number_with_delimiter(pack.cost) %></span>
+              <span class="block text-sm">Not enough credits</span>
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @packs.empty? %>
+  <div class="rounded-xl bg-gray-800 border border-gray-700 p-8 text-center">
+    <div class="text-4xl mb-4">🏪</div>
+    <h3 class="text-lg font-semibold text-white mb-2">No packs available</h3>
+    <p class="text-gray-400">Check back later for new packs!</p>
+  </div>
+<% end %>

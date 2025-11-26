@@ -1,0 +1,25 @@
+<div class="max-w-md mx-auto">
+  <h1 class="text-3xl font-bold text-white mb-8">👥 Create Team</h1>
+
+  <%= form_with model: @team, class: "space-y-6" do |f| %>
+    <% if @team.errors.any? %>
+      <div class="rounded-md bg-red-900/50 border border-red-500 p-4">
+        <ul class="list-disc list-inside text-sm text-red-400">
+          <% @team.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :name, "Team Name", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= f.text_field :name, class: "w-full rounded-md bg-gray-800 border border-gray-600 px-4 py-2 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500", placeholder: "Enter team name" %>
+    </div>
+
+    <div class="flex gap-4">
+      <%= f.submit "Create Team", class: "flex-1 rounded-md bg-cyan-600 px-4 py-2 font-semibold text-white hover:bg-cyan-500 cursor-pointer" %>
+      <%= link_to "Cancel", teams_path, class: "flex-1 text-center rounded-md bg-gray-700 px-4 py-2 font-semibold text-white hover:bg-gray-600" %>
+    </div>
+  <% end %>
+</div>

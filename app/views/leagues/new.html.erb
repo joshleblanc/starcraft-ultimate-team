@@ -1,0 +1,41 @@
+<div class="max-w-md mx-auto">
+  <h1 class="text-3xl font-bold text-white mb-8">🏆 Create League</h1>
+
+  <%= form_with model: @league, class: "space-y-6" do |f| %>
+    <% if @league.errors.any? %>
+      <div class="rounded-md bg-red-900/50 border border-red-500 p-4">
+        <ul class="list-disc list-inside text-sm text-red-400">
+          <% @league.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :name, "League Name", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= f.text_field :name, class: "w-full rounded-md bg-gray-800 border border-gray-600 px-4 py-2 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500", placeholder: "e.g., Pro League Season 1" %>
+    </div>
+
+    <div>
+      <%= f.label :max_teams, "Maximum Teams", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= f.select :max_teams, [4, 6, 8, 10, 12, 16], {}, class: "w-full rounded-md bg-gray-800 border border-gray-600 px-4 py-2 text-white focus:border-cyan-500 focus:ring-cyan-500" %>
+      <p class="mt-1 text-xs text-gray-500">More teams = more rounds. Each team plays every other team once.</p>
+    </div>
+
+    <div class="rounded-md bg-gray-800 border border-gray-700 p-4">
+      <h3 class="font-semibold text-white mb-2">📋 League Format</h3>
+      <ul class="text-sm text-gray-400 space-y-1">
+        <li>• Round-robin format (everyone plays everyone)</li>
+        <li>• Best of 5 games per match</li>
+        <li>• 3 points for a match win</li>
+        <li>• 1 point for winning any games in a loss</li>
+      </ul>
+    </div>
+
+    <div class="flex gap-4">
+      <%= f.submit "Create League", class: "flex-1 rounded-md bg-cyan-600 px-4 py-2 font-semibold text-white hover:bg-cyan-500 cursor-pointer" %>
+      <%= link_to "Cancel", leagues_path, class: "flex-1 text-center rounded-md bg-gray-700 px-4 py-2 font-semibold text-white hover:bg-gray-600" %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,80 @@
+<div class="max-w-2xl mx-auto">
+  <%= link_to "← Back to Cards", cards_path, class: "text-cyan-400 hover:text-cyan-300 mb-4 inline-block" %>
+  
+  <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+    <!-- Large Card Display -->
+    <div class="flex justify-center">
+      <div class="w-64">
+        <%= render "shared/card", user_card: @user_card %>
+      </div>
+    </div>
+    
+    <!-- Card Details -->
+    <div class="space-y-6">
+      <div>
+        <h1 class="text-3xl font-bold text-white"><%= @user_card.name %></h1>
+        <div class="flex items-center gap-2 mt-2">
+          <span class="text-2xl"><%= @user_card.race_icon %></span>
+          <span class="text-gray-400"><%= @user_card.race %></span>
+          <span class="px-2 py-1 rounded text-xs font-semibold uppercase" style="background: <%= @user_card.rarity_color %>22; color: <%= @user_card.rarity_color %>">
+            <%= @user_card.rarity %>
+          </span>
+        </div>
+      </div>
+      
+      <!-- Full Stats -->
+      <div class="rounded-xl bg-gray-800 border border-gray-700 p-4">
+        <h3 class="font-semibold text-white mb-4">Core Stats</h3>
+        <div class="space-y-3">
+          <% [['Macro', @user_card.macro, 'Economy, expansion timing, production'],
+              ['Micro', @user_card.micro, 'Unit control, splitting, spellcaster usage'],
+              ['Starsense', @user_card.starsense, 'Game sense, decision making, reads'],
+              ['Poise', @user_card.poise, 'Composure under pressure, clutch factor'],
+              ['Speed', @user_card.speed, 'APM, reaction time, multitasking']].each do |name, value, desc| %>
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-400"><%= name %></span>
+                <span class="font-semibold text-white"><%= value %></span>
+              </div>
+              <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full" style="width: <%= value %>%"></div>
+              </div>
+              <div class="text-xs text-gray-500 mt-1"><%= desc %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+      <!-- Game Phase Bonuses -->
+      <div class="rounded-xl bg-gray-800 border border-gray-700 p-4">
+        <h3 class="font-semibold text-white mb-4">Game Phase Bonuses</h3>
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <% [['Early Game', @user_card.early_game], ['Mid Game', @user_card.mid_game], ['Late Game', @user_card.late_game]].each do |name, value| %>
+            <div class="rounded-lg bg-gray-700/50 p-3">
+              <div class="text-xs text-gray-400 mb-1"><%= name %></div>
+              <div class="text-xl font-bold <%= value > 0 ? 'text-green-400' : value < 0 ? 'text-red-400' : 'text-gray-400' %>">
+                <%= value > 0 ? '+' : '' %><%= value %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div class="space-y-2">
+        <% if @user_card.is_starter? %>
+          <%= button_to "Remove from Lineup", remove_starter_card_path(@user_card), method: :delete, class: "w-full rounded-md bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-500" %>
+        <% else %>
+          <div class="text-sm text-gray-400 mb-2">Add to lineup position:</div>
+          <div class="flex gap-2">
+            <% (1..5).each do |position| %>
+              <%= button_to set_starter_card_path(@user_card, position: position), class: "flex-1 rounded-md bg-cyan-600 px-4 py-2 font-semibold text-white hover:bg-cyan-500" do %>
+                #<%= position %>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-3xl font-bold text-white">👥 Teams</h1>
+    <p class="mt-2 text-gray-400">View team rankings and create your own team</p>
+  </div>
+  <% unless current_user.active_team %>
+    <%= link_to new_team_path, class: "rounded-md bg-cyan-600 px-4 py-2 font-semibold text-white hover:bg-cyan-500" do %>
+      ➕ Create Team
+    <% end %>
+  <% end %>
+</div>
+
+<!-- Leaderboard -->
+<div class="rounded-xl bg-gray-800 border border-gray-700 overflow-hidden">
+  <div class="px-4 py-3 border-b border-gray-700">
+    <h2 class="font-semibold text-white">🏆 Leaderboard</h2>
+  </div>
+  <table class="w-full">
+    <thead class="bg-gray-700/50 text-sm text-gray-400">
+      <tr>
+        <th class="px-4 py-2 text-left">Rank</th>
+        <th class="px-4 py-2 text-left">Team</th>
+        <th class="px-4 py-2 text-left">Owner</th>
+        <th class="px-4 py-2 text-center">W-L</th>
+        <th class="px-4 py-2 text-center">Win %</th>
+        <th class="px-4 py-2 text-center">Rating</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-700">
+      <% @teams.each_with_index do |team, index| %>
+        <tr class="<%= team.user == current_user ? 'bg-cyan-900/20' : '' %> hover:bg-gray-700/50">
+          <td class="px-4 py-3">
+            <span class="<%= index < 3 ? 'text-yellow-400 font-bold' : 'text-gray-400' %>">
+              <%= index == 0 ? '🥇' : index == 1 ? '🥈' : index == 2 ? '🥉' : "##{index + 1}" %>
+            </span>
+          </td>
+          <td class="px-4 py-3">
+            <%= link_to team, class: "font-semibold text-white hover:text-cyan-400" do %>
+              <%= team.name %>
+            <% end %>
+          </td>
+          <td class="px-4 py-3 text-gray-400"><%= team.user.display_name %></td>
+          <td class="px-4 py-3 text-center text-white"><%= team.wins %>-<%= team.losses %></td>
+          <td class="px-4 py-3 text-center text-white"><%= team.win_rate %>%</td>
+          <td class="px-4 py-3 text-center">
+            <span class="px-2 py-1 rounded bg-purple-500/20 text-purple-400 font-semibold"><%= team.rating %></span>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<% if @teams.empty? %>
+  <div class="rounded-xl bg-gray-800 border border-gray-700 p-8 text-center">
+    <div class="text-4xl mb-4">👥</div>
+    <h3 class="text-lg font-semibold text-white mb-2">No teams yet</h3>
+    <p class="text-gray-400 mb-4">Be the first to create a team!</p>
+    <%= link_to "Create Team", new_team_path, class: "inline-flex items-center px-4 py-2 rounded-md bg-cyan-600 text-white font-semibold hover:bg-cyan-500" %>
+  </div>
+<% end %>

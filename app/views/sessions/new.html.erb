@@ -1,12 +1,33 @@
-<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
-<%= tag.div(flash[:notice], style: "color:green") if flash[:notice] %>
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="max-w-md w-full">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-cyan-400 mb-2">⚡ SC2 Ultimate Team</h1>
+      <p class="text-gray-400">Sign in to manage your collection</p>
+    </div>
 
-<%= form_with url: session_path do |form| %>
-  <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] %><br>
-  <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72 %><br>
-  <%= form.submit "Sign in" %>
-<% end %>
-<br>
+    <div class="rounded-xl bg-gray-800 border border-gray-700 p-8">
+      <%= form_with url: session_path, class: "space-y-6" do |form| %>
+        <div>
+          <%= form.label :email_address, "Email", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "w-full rounded-md bg-gray-700 border border-gray-600 px-4 py-2 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500" %>
+        </div>
 
-<%= link_to "Forgot password?", new_password_path %><br>
-<%= link_to "Sign up", new_registration_path %>
+        <div>
+          <%= form.label :password, "Password", class: "block text-sm font-medium text-gray-300 mb-2" %>
+          <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72, class: "w-full rounded-md bg-gray-700 border border-gray-600 px-4 py-2 text-white placeholder-gray-500 focus:border-cyan-500 focus:ring-cyan-500" %>
+        </div>
+
+        <%= form.submit "Sign In", class: "w-full rounded-md bg-cyan-600 px-4 py-2 font-semibold text-white hover:bg-cyan-500 cursor-pointer" %>
+      <% end %>
+
+      <div class="mt-6 flex items-center justify-between text-sm">
+        <%= link_to "Forgot password?", new_password_path, class: "text-gray-400 hover:text-white" %>
+        <%= link_to "Create account", new_registration_path, class: "text-cyan-400 hover:text-cyan-300" %>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center text-sm text-gray-500">
+      Demo: player1@example.com / password123
+    </div>
+  </div>
+</div>
