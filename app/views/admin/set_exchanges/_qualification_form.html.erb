@@ -1,0 +1,36 @@
+<div class="flex items-center gap-3">
+  <%= select_tag "exchange_qualification[qualification_type]",
+      options_for_select([["Rating Range", "rating_range"], ["Specific Card", "specific_card"], ["Specific Set", "specific_set"]], selected: qualification.qualification_type),
+      class: "rounded-md border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-white" %>
+
+  <div class="qualification-details qualification-type-rating_range <%= qualification.qualification_type != 'rating_range' ? 'hidden' : '' %>">
+    <%= number_field_tag "exchange_qualification[min_rating]", qualification.min_rating, in: 50..100, placeholder: "Min", class: "w-20 rounded-md border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-white" %>
+    <span class="text-gray-400">-</span>
+    <%= number_field_tag "exchange_qualification[max_rating]", qualification.max_rating, in: 50..100, placeholder: "Max", class: "w-20 rounded-md border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-white" %>
+  </div>
+
+  <div class="qualification-details qualification-type-specific_card <%= qualification.qualification_type != 'specific_card' ? 'hidden' : '' %>">
+    <%= select_tag "exchange_qualification[card_id]",
+        options_from_collection_for_select(Card.all.order(:name), :id, :name, qualification.card_id),
+        include_blank: "Select card",
+        class: "rounded-md border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-white" %>
+  </div>
+
+  <div class="qualification-details qualification-type-specific_set <%= qualification.qualification_type != 'specific_set' ? 'hidden' : '' %>">
+    <%= select_tag "exchange_qualification[card_set_id]",
+        options_from_collection_for_select(CardSet.all.order(:name), :id, :name, qualification.card_set_id),
+        include_blank: "Select set",
+        class: "rounded-md border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-white" %>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.qualification-type-select').forEach(select => {
+  select.addEventListener('change', function() {
+    const type = this.value;
+    const container = this.closest('.flex');
+    container.querySelectorAll('.qualification-details').forEach(div => div.classList.add('hidden'));
+    container.querySelector(`.qualification-type-${type}`)?.classList.remove('hidden');
+  });
+});
+</script>
