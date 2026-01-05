@@ -75,14 +75,9 @@ Rails.application.routes.draw do
     resources :cards
     resources :card_sets
     resources :set_exchanges do
-      member do
-        post :add_slot
-        post :remove_slot
-        post :add_qualification
-        patch :update_qualification
-        delete :remove_qualification
-      end
+      resources :exchange_slots, shallow: true
     end
+    resources :exchange_qualifications, shallow: true
   end
 
   # Health check

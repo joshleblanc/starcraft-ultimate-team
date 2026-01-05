@@ -1,0 +1,37 @@
+<div id="slot-<%= slot.id %>" class="rounded-lg bg-gray-900 p-4 border border-gray-700">
+  <div class="flex items-center justify-between mb-3">
+    <div class="flex items-center gap-3">
+      <span class="font-medium text-white">Slot <%= slot.position %></span>
+      <span class="text-xs text-gray-500">(<%= slot.exchange_qualifications.count %> qualification<%= slot.exchange_qualifications.count == 1 ? '' : 's' %>)</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <%= link_to "Add Qualification", new_admin_exchange_qualification_path(slot), class: "text-xs text-cyan-400 hover:text-cyan-300" %>
+      <%= button_to "Delete Slot", admin_exchange_slot_path(slot), method: :delete, class: "text-xs text-red-400 hover:text-red-300", data: { turbo_confirm: "Delete this slot?" } %>
+    </div>
+  </div>
+
+  <% if slot.exchange_qualifications.any? %>
+    <div class="space-y-2">
+      <% slot.exchange_qualifications.order(:created_at).each do |qual| %>
+        <div class="flex items-center justify-between p-2 rounded bg-gray-800">
+          <div class="flex items-center gap-2 text-sm">
+            <% case qual.qualification_type %>
+            <% when "rating_range" %>
+              <span class="text-cyan-400"><%= qual.min_rating %>-<%= qual.max_rating %> rated</span>
+            <% when "specific_card" %>
+              <span class="text-yellow-400"><%= qual.card&.name || "Unknown" %></span>
+            <% when "specific_set" %>
+              <span class="text-purple-400"><%= qual.card_set&.name || "Unknown" %></span>
+            <% end %>
+          </div>
+          <div class="flex items-center gap-2">
+            <%= link_to "Edit", edit_admin_exchange_qualification_path(qual), class: "text-xs text-gray-400 hover:text-gray-300" %>
+            <%= button_to "×", admin_exchange_qualification_path(qual), method: :delete, class: "text-xs text-red-400 hover:text-red-300" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-gray-500">No qualifications. Add one to define what cards this slot accepts.</p>
+  <% end %>
+</div>

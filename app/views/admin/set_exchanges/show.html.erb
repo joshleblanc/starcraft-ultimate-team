@@ -1,0 +1,69 @@
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <div class="flex items-center gap-3">
+      <%= link_to "← Back", admin_set_exchanges_path, class: "text-gray-400 hover:text-white" %>
+      <h1 class="text-3xl font-bold text-white"><%= @set_exchange.name %></h1>
+      <span class="<%= @set_exchange.active? ? 'text-green-400' : 'text-gray-400' %>">
+        <%= @set_exchange.active? ? 'Active' : 'Inactive' %>
+      </span>
+    </div>
+    <p class="mt-2 text-gray-400"><%= @set_exchange.description %></p>
+  </div>
+  <div class="flex gap-3">
+    <%= link_to "Edit Details", edit_admin_set_exchange_path(@set_exchange), class: "rounded-md border border-gray-600 bg-gray-700 px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-600" %>
+    <%= button_to "Delete Exchange", admin_set_exchange_path(@set_exchange), method: :delete, class: "rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500", data: { turbo_confirm: "Are you sure?" } %>
+  </div>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="lg:col-span-2 space-y-6">
+    <div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-white">Slots & Requirements</h2>
+        <%= link_to "Add Slot", new_admin_set_exchange_exchange_slot_path(@set_exchange), class: "rounded-md bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-cyan-500" %>
+      </div>
+
+      <div id="slots" class="space-y-4">
+        <% if @slots.any? %>
+          <% @slots.each do |slot| %>
+            <%= render "slot", slot: slot %>
+          <% end %>
+        <% else %>
+          <p class="text-center text-gray-500 py-8">No slots yet. Add a slot to define requirements.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
+      <h2 class="text-lg font-semibold text-white mb-4">Exchange Details</h2>
+      <dl class="space-y-3">
+        <div>
+          <dt class="text-sm text-gray-400">Card Set</dt>
+          <dd class="text-white"><%= @set_exchange.card_set.name %></dd>
+        </div>
+        <div>
+          <dt class="text-sm text-gray-400">Slots</dt>
+          <dd class="text-white"><%= @set_exchange.exchange_slots.count %></dd>
+        </div>
+        <div>
+          <dt class="text-sm text-gray-400">Output</dt>
+          <dd class="text-cyan-400"><%= @set_exchange.output_count %>x <%= @set_exchange.output_min_rating %>-<%= @set_exchange.output_max_rating %> rated</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
+      <h2 class="text-lg font-semibold text-white mb-4">Preview</h2>
+      <p class="text-gray-300 mb-4"><%= @set_exchange.exchange_description %></p>
+      <div class="text-sm text-gray-400">
+        <% if @set_exchange.can_redeem?(current_user) %>
+          <span class="text-green-400">✓ All requirements met</span>
+        <% else %>
+          <span class="text-gray-500">Requirements not met</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

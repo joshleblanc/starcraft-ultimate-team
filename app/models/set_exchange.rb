@@ -8,7 +8,6 @@ class SetExchange < ApplicationRecord
   validates :output_min_rating, :output_max_rating, presence: true
   validates :output_count, numericality: { greater_than: 0 }
   validate :output_rating_range_valid
-  validate :has_at_least_one_slot
 
   scope :active, -> { where(active: true) }
   scope :for_card_set, ->(set_id) { where(card_set_id: set_id) }
@@ -25,10 +24,6 @@ class SetExchange < ApplicationRecord
   def exchange_description
     slots = exchange_slots.count
     "Complete #{slots} slot#{slots == 1 ? '' : 's'} for #{output_count} #{output_min_rating}-#{output_max_rating} rated card#{output_count == 1 ? '' : 's'}"
-  end
-
-  def slots_filled
-    exchange_slots.map { |slot| [ slot, slot.exchange_qualifications.to_a ] }
   end
 
   def can_redeem?(user)
@@ -94,9 +89,5 @@ class SetExchange < ApplicationRecord
     return if output_min_rating <= output_max_rating
 
     errors.add(:base, "Output min rating must be less than or equal to max rating")
-  end
-
-  def has_at_least_one_slot
-    errors.add(:base, "Exchange must have at least one slot") if exchange_slots.empty?
   end
 end
