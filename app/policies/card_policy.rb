@@ -8,15 +8,15 @@ class CardPolicy < ApplicationPolicy
   end
 
   def create?
-    false # Only system can create cards
+    user.admin?
   end
 
   def update?
-    false
+    user.admin?
   end
 
   def destroy?
-    false
+    user.admin?
   end
 
   class Scope < ApplicationPolicy::Scope

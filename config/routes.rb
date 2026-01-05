@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :card_sets
   # Authentication
   resource :session
   resource :registration, only: %i[new create]
@@ -8,12 +9,12 @@ Rails.application.routes.draw do
   root "dashboard#show"
 
   # Cup Rush (Single Player)
-  resource :cup_rush, only: [:show], controller: "cup_rush" do
+  resource :cup_rush, only: [ :show ], controller: "cup_rush" do
     post :new_season
   end
 
   # Cards & Collection
-  resources :cards, only: [:index, :show] do
+  resources :cards, only: [ :index, :show ] do
     member do
       post :set_starter
       delete :remove_starter
@@ -21,7 +22,7 @@ Rails.application.routes.draw do
   end
 
   # Packs
-  resources :packs, only: [:index, :show] do
+  resources :packs, only: [ :index, :show ] do
     member do
       post :open
       get :opening
@@ -40,7 +41,7 @@ Rails.application.routes.draw do
   end
 
   # Matches
-  resources :matches, only: [:index, :show] do
+  resources :matches, only: [ :index, :show ] do
     member do
       get :lineup
       post :submit_lineup
@@ -50,16 +51,22 @@ Rails.application.routes.draw do
   end
 
   # Games
-  resources :games, only: [:show]
+  resources :games, only: [ :show ]
 
   # Notifications
-  resources :notifications, only: [:index] do
+  resources :notifications, only: [ :index ] do
     member do
       post :mark_as_read
     end
     collection do
       post :mark_all_as_read
     end
+  end
+
+  # Admin
+  namespace :admin do
+    resources :cards
+    resources :card_sets
   end
 
   # Health check

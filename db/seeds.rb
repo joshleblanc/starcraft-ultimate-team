@@ -13,7 +13,7 @@ def generate_stats(rarity)
          when "rare" then rand(45..70)
          else rand(30..60)
          end
-  
+
   variance = 15
   {
     macro: [[base + rand(-variance..variance), 100].min, 1].max,
@@ -26,6 +26,9 @@ def generate_stats(rarity)
     late_game: rand(-15..15)
   }
 end
+
+card_set = CardSet.create(name: "Default", description: "Default players")
+
 
 # Create Cards
 puts "Creating cards..."
@@ -42,7 +45,7 @@ puts "Creating cards..."
              when 5..7 then "rare"
              else "common"
              end
-    
+
     stats = generate_stats(rarity)
     Card.find_or_create_by!(name: name, race: race) do |card|
       card.rarity = rarity
@@ -54,9 +57,11 @@ puts "Creating cards..."
       card.early_game = stats[:early_game]
       card.mid_game = stats[:mid_game]
       card.late_game = stats[:late_game]
+      card.card_set = card_set
     end
   end
 end
+
 
 # Add some Random race players
 %w[Has Bly PtitDrogo uThermal].each do |name|
@@ -71,6 +76,7 @@ end
     card.early_game = stats[:early_game]
     card.mid_game = stats[:mid_game]
     card.late_game = stats[:late_game]
+    card.card_set = card_set
   end
 end
 
@@ -117,13 +123,13 @@ puts "Created #{Pack.count} packs"
 # Create demo user with team and cards (only in development)
 if Rails.env.development?
   puts "Creating demo user..."
-  
+
   user = User.find_or_create_by!(email_address: "player@example.com") do |u|
     u.password = "password123"
     u.username = "Commander"
     u.credits = 2000
   end
-  
+
   # Give user some random cards
   if user.user_cards.empty?
     Card.order("RANDOM()").limit(10).each_with_index do |card, index|
@@ -134,32 +140,32 @@ if Rails.env.development?
       )
     end
   end
-  
+
   # Create team if doesn't exist
   if user.teams.empty?
     user.teams.create!(name: "Team Commander")
   end
-  
+
   puts "  Created user: #{user.email_address} with #{user.user_cards.count} cards"
 
   # Create CPU teams for Cup Rush
   puts "Creating CPU teams..."
   cpu_team_names = [
     "Koprulu Marines",
-    "Aiur Guardians", 
+    "Aiur Guardians",
     "Swarm Collective",
     "Dominion Elite",
     "Dark Templar",
     "Overmind's Fury",
     "Raynor's Raiders"
   ]
-  
+
   cpu_team_names.each do |name|
     next if Team.exists?(name: name)
     Team.create!(name: name, is_cpu: true, rating: rand(900..1100))
     puts "  Created CPU team: #{name}"
   end
-  
+
   puts "CPU teams ready for Cup Rush - leagues auto-created when you start playing!"
 end
 

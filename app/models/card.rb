@@ -3,6 +3,8 @@ class Card < ApplicationRecord
   RARITIES = %w[common rare epic legendary].freeze
   ROLES = %w[player coach].freeze
 
+  belongs_to :card_set
+
   has_many :user_cards, dependent: :destroy
   has_many :users, through: :user_cards
 
@@ -10,7 +12,7 @@ class Card < ApplicationRecord
   validates :race, presence: true, inclusion: { in: RACES }
   validates :rarity, presence: true, inclusion: { in: RARITIES }
   validates :player_role, inclusion: { in: ROLES }
-  
+
   validates :macro, :micro, :starsense, :poise, :speed,
             numericality: { in: 1..100 }
   validates :early_game, :mid_game, :late_game,

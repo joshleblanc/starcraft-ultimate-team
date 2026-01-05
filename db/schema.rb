@@ -10,8 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_26_001701) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_05_002110) do
+  create_table "card_sets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "cards", force: :cascade do |t|
+    t.integer "card_set_id", null: false
     t.datetime "created_at", null: false
     t.integer "early_game", default: 0, null: false
     t.string "image_url"
@@ -28,6 +36,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_001701) do
     t.integer "speed", default: 50, null: false
     t.integer "starsense", default: 50, null: false
     t.datetime "updated_at", null: false
+    t.index ["card_set_id"], name: "index_cards_on_card_set_id"
     t.index ["overall_rating"], name: "index_cards_on_overall_rating"
     t.index ["race"], name: "index_cards_on_race"
     t.index ["rarity"], name: "index_cards_on_rarity"
@@ -228,6 +237,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_001701) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.boolean "admin"
     t.datetime "created_at", null: false
     t.integer "credits", default: 1000, null: false
     t.string "email_address", null: false
@@ -238,6 +248,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_001701) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "cards", "card_sets"
   add_foreign_key "games", "matches"
   add_foreign_key "games", "teams", column: "winner_team_id"
   add_foreign_key "games", "user_cards", column: "away_player_id"
