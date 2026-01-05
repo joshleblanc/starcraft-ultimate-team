@@ -1,0 +1,37 @@
+<div class="mb-8">
+  <div class="flex items-center gap-4">
+    <%= link_to "← Back", admin_card_sets_path, class: "text-gray-400 hover:text-white" %>
+    <h1 class="text-3xl font-bold text-white">Create New Card Set</h1>
+  </div>
+  <p class="mt-2 text-gray-400">Create a card set to group cards by tournament or season</p>
+</div>
+
+<div class="max-w-2xl">
+  <%= form_with model: [:admin, @card_set], class: "space-y-6" do |f| %>
+    <% if @card_set.errors.any? %>
+      <div class="rounded-lg bg-red-900/50 border border-red-700 p-4">
+        <h3 class="font-medium text-red-300"><%= pluralize(@card_set.errors.count, "error") %> prohibited this card set from being saved:</h3>
+        <ul class="mt-2 list-disc list-inside text-sm text-red-400">
+          <% @card_set.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :name, class: "block text-sm font-medium text-gray-300" %>
+      <%= f.text_field :name, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm", placeholder: "e.g., MLG 2019, IEM Katowice 2024" %>
+    </div>
+
+    <div>
+      <%= f.label :description, class: "block text-sm font-medium text-gray-300" %>
+      <%= f.text_area :description, rows: 3, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm", placeholder: "Describe this card set, tournament details, or theme" %>
+    </div>
+
+    <div class="flex justify-end gap-4 pt-6">
+      <%= link_to "Cancel", admin_card_sets_path, class: "rounded-md border border-gray-600 bg-gray-700 px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-600" %>
+      <%= f.submit "Create Card Set", class: "rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-500" %>
+    </div>
+  <% end %>
+</div>

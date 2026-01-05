@@ -1,0 +1,103 @@
+<div class="mb-8">
+  <div class="flex items-center gap-4">
+    <%= link_to "← Back", admin_cards_path, class: "text-gray-400 hover:text-white" %>
+    <h1 class="text-3xl font-bold text-white">Create New Card</h1>
+  </div>
+  <p class="mt-2 text-gray-400">Add a new player or coach card to the game</p>
+</div>
+
+<div class="max-w-4xl">
+  <%= form_with model: [:admin, @card], class: "space-y-6" do |f| %>
+    <% if @card.errors.any? %>
+      <div class="rounded-lg bg-red-900/50 border border-red-700 p-4">
+        <h3 class="font-medium text-red-300"><%= pluralize(@card.errors.count, "error") %> prohibited this card from being saved:</h3>
+        <ul class="mt-2 list-disc list-inside text-sm text-red-400">
+          <% @card.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div class="sm:col-span-2">
+        <%= f.label :name, class: "block text-sm font-medium text-gray-300" %>
+        <%= f.text_field :name, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+      </div>
+
+      <div>
+        <%= f.label :card_set_id, "Card Set", class: "block text-sm font-medium text-gray-300" %>
+        <%= f.collection_select :card_set_id, CardSet.all.order(:name), :id, :name, { include_blank: "Select a card set" }, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+      </div>
+
+      <div>
+        <%= f.label :race, class: "block text-sm font-medium text-gray-300" %>
+        <%= f.select :race, Card::RACES, {}, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+      </div>
+
+      <div>
+        <%= f.label :rarity, class: "block text-sm font-medium text-gray-300" %>
+        <%= f.select :rarity, Card::RARITIES, {}, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+      </div>
+
+      <div>
+        <%= f.label :player_role, class: "block text-sm font-medium text-gray-300" %>
+        <%= f.select :player_role, Card::ROLES, {}, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-700 pt-6">
+      <h3 class="text-lg font-medium text-white mb-4">Core Stats (1-100)</h3>
+      <div class="grid grid-cols-2 gap-6 sm:grid-cols-5">
+        <div>
+          <%= f.label :macro, "Macro", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.number_field :macro, in: 1..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+        <div>
+          <%= f.label :micro, "Micro", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.number_field :micro, in: 1..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+        <div>
+          <%= f.label :starsense, "Starsense", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.number_field :starsense, in: 1..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+        <div>
+          <%= f.label :poise, "Poise", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.number_field :poise, in: 1..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+        <div>
+          <%= f.label :speed, "Speed", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.number_field :speed, in: 1..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-700 pt-6">
+      <h3 class="text-lg font-medium text-white mb-4">Game Phase Modifiers (-30 to +30)</h3>
+      <p class="text-sm text-gray-400 mb-4">Bonuses applied to effective stats during each phase of the game.</p>
+      <div class="grid grid-cols-3 gap-6">
+        <div>
+          <%= f.label :early_game, "Early Game", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.number_field :early_game, in: -30..30, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+        <div>
+          <%= f.label :mid_game, "Mid Game", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.number_field :mid_game, in: -30..30, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+        <div>
+          <%= f.label :late_game, "Late Game", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.number_field :late_game, in: -30..30, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end gap-4 pt-6">
+      <% if @card.card_set_id %>
+        <%= link_to "Cancel", admin_card_set_path(@card.card_set_id), class: "rounded-md border border-gray-600 bg-gray-700 px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-600" %>
+      <% else %>
+        <%= link_to "Cancel", admin_cards_path, class: "rounded-md border border-gray-600 bg-gray-700 px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-600" %>
+      <% end %>
+      <%= f.submit "Create Card", class: "rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-500" %>
+    </div>
+  <% end %>
+</div>
