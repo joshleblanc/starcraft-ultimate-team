@@ -48,7 +48,6 @@ puts "Creating cards..."
 
     stats = generate_stats(rarity)
     Card.find_or_create_by!(name: name, race: race) do |card|
-      card.rarity = rarity
       card.macro = stats[:macro]
       card.micro = stats[:micro]
       card.starsense = stats[:starsense]
@@ -67,7 +66,6 @@ end
 %w[Has Bly PtitDrogo uThermal].each do |name|
   stats = generate_stats(%w[common rare epic].sample)
   Card.find_or_create_by!(name: name, race: "Random") do |card|
-    card.rarity = %w[common rare epic].sample
     card.macro = stats[:macro]
     card.micro = stats[:micro]
     card.starsense = stats[:starsense]
@@ -90,10 +88,6 @@ Pack.find_or_create_by!(name: "Standard Pack") do |pack|
   pack.card_count = 5
   pack.cost = 100
   pack.description = "A basic pack with 5 random cards"
-  pack.common_weight = 70
-  pack.rare_weight = 20
-  pack.epic_weight = 8
-  pack.legendary_weight = 2
 end
 
 Pack.find_or_create_by!(name: "Premium Pack") do |pack|
@@ -101,21 +95,13 @@ Pack.find_or_create_by!(name: "Premium Pack") do |pack|
   pack.card_count = 5
   pack.cost = 300
   pack.description = "Better odds for rare and epic cards"
-  pack.common_weight = 40
-  pack.rare_weight = 35
-  pack.epic_weight = 20
-  pack.legendary_weight = 5
 end
 
 Pack.find_or_create_by!(name: "Legendary Pack") do |pack|
-  pack.pack_type = "legendary"
+  pack.pack_type = "premium"
   pack.card_count = 3
   pack.cost = 750
   pack.description = "Guaranteed epic or better!"
-  pack.common_weight = 0
-  pack.rare_weight = 0
-  pack.epic_weight = 70
-  pack.legendary_weight = 30
 end
 
 puts "Created #{Pack.count} packs"
@@ -127,6 +113,7 @@ if Rails.env.development?
   user = User.find_or_create_by!(email_address: "player@example.com") do |u|
     u.password = "password123"
     u.username = "Commander"
+    u.admin = true
     u.credits = 2000
   end
 

@@ -7,11 +7,12 @@ class Admin::SetExchangesController < ApplicationController
   end
 
   def show
-    @cards = @set_exchange.card_set.cards
+    @slots = @set_exchange.exchange_slots.includes(:exchange_qualifications)
   end
 
   def new
     @set_exchange = SetExchange.new
+    @set_exchange.exchange_slots.build
   end
 
   def create
@@ -20,11 +21,13 @@ class Admin::SetExchangesController < ApplicationController
     if @set_exchange.save
       redirect_to admin_set_exchanges_path, notice: "Exchange was successfully created."
     else
+      build_default_slot if @set_exchange.exchange_slots.empty?
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
+    @slots = @set_exchange.exchange_slots.includes(:exchange_qualifications)
   end
 
   def update
@@ -38,6 +41,42 @@ class Admin::SetExchangesController < ApplicationController
   def destroy
     @set_exchange.destroy!
     redirect_to admin_set_exchanges_path, notice: "Exchange was successfully deleted."
+  end
+
+  def add_slot
+    @set_exchange = SetExchange.find(params[:set_exchange_id])
+    max_position = @set_exchange.exchange_slots.maximum(:position) || 0
+    @slot = @set_exchange.exchange_slots.create!(position: max_position + 1)
+    redirect_to edit_admin_set_exchange_path(@set_exchange), notice: "Slot added."
+  end
+
+  def remove_slot
+    @set_exchange = SetExchange.find(params[:set_exchange_id])
+    @slot = @set_exchange.exchange_slots.find_by(position: params[:position])
+    @slot&.destroy!
+    redirect_to edit_admin_set_exchange_path(@set_exchange), notice: "Slot removed."
+  end
+
+  def add_qualification
+    @slot = ExchangeSlot.find(params[:slot_id])
+    @slot.exchange_qualifications.create!(qualification_type: "rating_range")
+    redirect_to edit_admin_set_exchange_path(@slot.set_exchange), notice: "Qualification added."
+  end
+
+  def update_qualification
+    @qualification = ExchangeQualification.find(params[:id])
+    if @qualification.update(qualification_params)
+      redirect_to edit_admin_set_exchange_path(@qualification.exchange_slot.set_exchange), notice: "Qualification updated."
+    else
+      redirect_to edit_admin_set_exchange_path(@qualification.exchange_slot.set_exchange), alert: "Invalid qualification."
+    end
+  end
+
+  def remove_qualification
+    @qualification = ExchangeQualification.find(params[:id])
+    @set_exchange = @qualification.exchange_slot.set_exchange
+    @qualification.destroy!
+    redirect_to edit_admin_set_exchange_path(@set_exchange), notice: "Qualification removed."
   end
 
   private
@@ -55,8 +94,18 @@ class Admin::SetExchangesController < ApplicationController
   def set_exchange_params
     params.require(:set_exchange).permit(
       :card_set_id, :name, :description, :active,
-      :input_min_rating, :input_max_rating, :input_count,
-      :output_min_rating, :output_max_rating, :output_count
+      :output_min_rating, :output_max_rating, :output_count,
+      exchange_slots_attributes: [ :id, :position, :_destroy ]
     )
+  end
+
+  def qualification_params
+    params.require(:exchange_qualification).permit(
+      :qualification_type, :card_id, :card_set_id, :min_rating, :max_rating
+    )
+  end
+
+  def build_default_slot
+    @set_exchange.exchange_slots.build(position: 1)
   end
 end

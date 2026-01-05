@@ -74,7 +74,15 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :cards
     resources :card_sets
-    resources :set_exchanges
+    resources :set_exchanges do
+      member do
+        post :add_slot
+        post :remove_slot
+        post :add_qualification
+        patch :update_qualification
+        delete :remove_qualification
+      end
+    end
   end
 
   # Health check

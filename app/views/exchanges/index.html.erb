@@ -1,6 +1,6 @@
 <div class="mb-8">
   <h1 class="text-3xl font-bold text-white">🔄 Card Exchanges</h1>
-  <p class="mt-2 text-gray-400">Trade up lower-rated cards for higher-rated ones from the same set</p>
+  <p class="mt-2 text-gray-400">Complete slot requirements to trade for higher-rated cards</p>
 </div>
 
 <% if @exchanges_by_set.empty? %>
@@ -24,38 +24,73 @@
           </span>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="space-y-4">
           <% exchanges.each do |exchange| %>
+            <% eligible_by_slot = exchange.eligible_cards_by_slot(current_user) %>
+            <% can_redeem = exchange.can_redeem?(current_user) %>
             <% available = exchange.available_exchange_count(current_user) %>
-            <div class="rounded-lg bg-gray-900 p-4 <%= available > 0 ? 'border border-green-700' : 'border border-gray-700' %>">
-              <div class="flex items-start justify-between mb-3">
-                <h3 class="font-semibold text-white"><%= exchange.name %></h3>
-                <% if available > 0 %>
+
+            <div class="rounded-lg bg-gray-900 p-4 <%= can_redeem ? 'border border-green-700' : 'border border-gray-700' %>">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-semibold text-white"><%= exchange.name %></h3>
+                  <p class="text-sm text-gray-400"><%= exchange.description %></p>
+                </div>
+                <% if can_redeem %>
                   <span class="rounded-full bg-green-900 px-2 py-0.5 text-xs font-medium text-green-300">
-                    <%= available %> available
+                    Ready!
+                  </span>
+                <% elsif available > 0 %>
+                  <span class="rounded-full bg-yellow-900 px-2 py-0.5 text-xs font-medium text-yellow-300">
+                    <%= available %> left
                   </span>
                 <% end %>
               </div>
 
-              <p class="text-sm text-gray-400 mb-3"><%= exchange.description %></p>
-
-              <div class="flex items-center gap-2 text-sm mb-4">
-                <div class="flex-1 text-center rounded bg-gray-800 p-2">
-                  <div class="text-xs text-gray-500">Give</div>
-                  <div class="font-semibold text-gray-300"><%= exchange.input_count %>x <%= exchange.input_min_rating %>-<%= exchange.input_max_rating %></div>
-                </div>
-                <div class="text-gray-500">→</div>
-                <div class="flex-1 text-center rounded bg-cyan-900/50 p-2">
-                  <div class="text-xs text-gray-500">Get</div>
-                  <div class="font-semibold text-cyan-300"><%= exchange.output_count %>x <%= exchange.output_min_rating %>-<%= exchange.output_max_rating %></div>
+              <div class="mb-4">
+                <div class="text-xs text-gray-500 uppercase tracking-wider mb-2">Requirements</div>
+                <div class="grid gap-2 sm:grid-cols-<%= exchange.exchange_slots.count %>">
+                  <% exchange.exchange_slots.order(:position).each_with_index do |slot, index| %>
+                    <% eligible_count = eligible_by_slot[slot]&.count || 0 %>
+                    <div class="p-3 rounded <%= eligible_count > 0 ? 'bg-gray-800' : 'bg-gray-800/50' %>">
+                      <div class="text-xs text-gray-500 mb-1">Slot <%= index + 1 %></div>
+                      <div class="text-sm text-gray-300">
+                        <% slot.exchange_qualifications.each do |qual| %>
+                          <div class="flex items-center gap-1">
+                            <% case qual.qualification_type %>
+                            <% when "rating_range" %>
+                              <span class="text-cyan-400"><%= qual.min_rating %>-<%= qual.max_rating %> rated</span>
+                            <% when "specific_card" %>
+                              <span class="text-yellow-400"><%= qual.card&.name || "Unknown" %></span>
+                            <% when "specific_set" %>
+                              <span class="text-purple-400"><%= qual.card_set&.name || "Unknown" %> set</span>
+                            <% end %>
+                          </div>
+                        <% end %>
+                      </div>
+                      <div class="mt-2 text-xs">
+                        <% if eligible_count > 0 %>
+                          <span class="text-green-400">✓ <%= eligible_count %> eligible</span>
+                        <% else %>
+                          <span class="text-red-400">Need cards</span>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
                 </div>
               </div>
 
-              <% if available > 0 %>
-                <%= button_to "Exchange", redeem_exchange_path(exchange), method: :post, class: "w-full rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white hover:bg-cyan-500" %>
+              <div class="flex items-center gap-2 text-sm pb-3 border-t border-gray-700">
+                <span class="text-gray-400">Get:</span>
+                <span class="font-semibold text-cyan-300"><%= exchange.output_count %>x <%= exchange.output_min_rating %>-<%= exchange.output_max_rating %> rated</span>
+                <span class="text-gray-500">from <%= card_set.name %></span>
+              </div>
+
+              <% if can_redeem %>
+                <%= button_to "Exchange Cards", redeem_exchange_path(exchange), method: :post, class: "w-full rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white hover:bg-cyan-500" %>
               <% else %>
                 <button disabled class="w-full rounded-md bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-400 cursor-not-allowed">
-                  Need <%= exchange.input_count %> cards
+                  Complete requirements to exchange
                 </button>
               <% end %>
             </div>

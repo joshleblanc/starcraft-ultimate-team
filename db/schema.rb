@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_06_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_06_010200) do
   create_table "card_sets", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description"
@@ -38,6 +38,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_000002) do
     t.index ["card_set_id"], name: "index_cards_on_card_set_id"
     t.index ["overall_rating"], name: "index_cards_on_overall_rating"
     t.index ["race"], name: "index_cards_on_race"
+  end
+
+  create_table "exchange_qualifications", force: :cascade do |t|
+    t.integer "card_id"
+    t.integer "card_set_id"
+    t.datetime "created_at", null: false
+    t.integer "exchange_slot_id", null: false
+    t.integer "max_rating"
+    t.integer "min_rating"
+    t.string "qualification_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exchange_slot_id"], name: "index_exchange_qualifications_on_exchange_slot_id"
+    t.index ["qualification_type"], name: "index_exchange_qualifications_on_qualification_type"
+  end
+
+  create_table "exchange_redemptions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "exchange_slot_id", null: false
+    t.integer "output_user_card_id", null: false
+    t.integer "set_exchange_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_card_id", null: false
+    t.index ["exchange_slot_id"], name: "index_exchange_redemptions_on_exchange_slot_id"
+    t.index ["output_user_card_id"], name: "index_exchange_redemptions_on_output_user_card_id"
+    t.index ["set_exchange_id"], name: "index_exchange_redemptions_on_set_exchange_id"
+    t.index ["user_card_id"], name: "index_exchange_redemptions_on_user_card_id"
+  end
+
+  create_table "exchange_slots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "position", null: false
+    t.integer "set_exchange_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["set_exchange_id", "position"], name: "index_exchange_slots_on_set_exchange_id_and_position", unique: true
+    t.index ["set_exchange_id"], name: "index_exchange_slots_on_set_exchange_id"
   end
 
   create_table "games", force: :cascade do |t|
@@ -214,9 +249,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_000002) do
     t.integer "card_set_id", null: false
     t.datetime "created_at", null: false
     t.text "description"
-    t.integer "input_count", null: false
-    t.integer "input_max_rating", null: false
-    t.integer "input_min_rating", null: false
     t.string "name", null: false
     t.integer "output_count", default: 1, null: false
     t.integer "output_max_rating", null: false
@@ -266,6 +298,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_000002) do
   end
 
   add_foreign_key "cards", "card_sets"
+  add_foreign_key "exchange_qualifications", "exchange_slots"
+  add_foreign_key "exchange_redemptions", "exchange_slots"
+  add_foreign_key "exchange_redemptions", "set_exchanges"
+  add_foreign_key "exchange_redemptions", "user_cards"
+  add_foreign_key "exchange_redemptions", "user_cards", column: "output_user_card_id"
+  add_foreign_key "exchange_slots", "set_exchanges"
   add_foreign_key "games", "matches"
   add_foreign_key "games", "teams", column: "winner_team_id"
   add_foreign_key "games", "user_cards", column: "away_player_id"

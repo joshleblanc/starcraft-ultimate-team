@@ -3,10 +3,11 @@
     <%= link_to "← Back", admin_set_exchanges_path, class: "text-gray-400 hover:text-white" %>
     <h1 class="text-3xl font-bold text-white">Edit Exchange</h1>
   </div>
+  <p class="mt-2 text-gray-400">Configure slots and requirements</p>
 </div>
 
-<div class="max-w-3xl">
-  <%= form_with model: [:admin, @set_exchange], class: "space-y-6" do |f| %>
+<div class="max-w-4xl">
+  <%= form_with model: [:admin, @set_exchange], class: "space-y-8" do |f| %>
     <% if @set_exchange.errors.any? %>
       <div class="rounded-lg bg-red-900/50 border border-red-700 p-4">
         <h3 class="font-medium text-red-300"><%= pluralize(@set_exchange.errors.count, "error") %> prohibited this exchange from being saved:</h3>
@@ -18,62 +19,99 @@
       </div>
     <% end %>
 
-    <div>
-      <%= f.label :card_set_id, "Card Set", class: "block text-sm font-medium text-gray-300" %>
-      <%= f.collection_select :card_set_id, CardSet.all.order(:name), :id, :name, {}, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
-    </div>
+    <div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
+      <h2 class="text-lg font-semibold text-white mb-4">Exchange Details</h2>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <div class="sm:col-span-2">
-        <%= f.label :name, class: "block text-sm font-medium text-gray-300" %>
-        <%= f.text_field :name, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <%= f.label :card_set_id, "Card Set", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.collection_select :card_set_id, CardSet.all.order(:name), :id, :name, {}, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+
+        <div class="sm:col-span-2">
+          <%= f.label :name, class: "block text-sm font-medium text-gray-300" %>
+          <%= f.text_field :name, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
+
+        <div class="sm:col-span-2">
+          <%= f.label :description, class: "block text-sm font-medium text-gray-300" %>
+          <%= f.text_area :description, rows: 2, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+        </div>
       </div>
 
-      <div class="sm:col-span-2">
-        <%= f.label :description, class: "block text-sm font-medium text-gray-300" %>
-        <%= f.text_area :description, rows: 2, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
-      </div>
-    </div>
-
-    <div class="border-t border-gray-700 pt-6">
-      <h3 class="text-lg font-medium text-white mb-4">Input Requirements</h3>
-      <div class="grid grid-cols-3 gap-6">
-        <div>
-          <%= f.label :input_min_rating, "Min Rating", class: "block text-sm font-medium text-gray-300" %>
-          <%= f.number_field :input_min_rating, in: 50..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
-        </div>
-        <div>
-          <%= f.label :input_max_rating, "Max Rating", class: "block text-sm font-medium text-gray-300" %>
-          <%= f.number_field :input_max_rating, in: 50..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
-        </div>
-        <div>
-          <%= f.label :input_count, "Count Required", class: "block text-sm font-medium text-gray-300" %>
-          <%= f.number_field :input_count, in: 1..10, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+      <div class="border-t border-gray-700 pt-6 mt-6">
+        <h3 class="text-md font-medium text-white mb-4">Output</h3>
+        <div class="grid grid-cols-3 gap-6">
+          <div>
+            <%= f.label :output_min_rating, "Min Rating", class: "block text-sm font-medium text-gray-300" %>
+            <%= f.number_field :output_min_rating, in: 50..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+          </div>
+          <div>
+            <%= f.label :output_max_rating, "Max Rating", class: "block text-sm font-medium text-gray-300" %>
+            <%= f.number_field :output_max_rating, in: 50..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+          </div>
+          <div>
+            <%= f.label :output_count, "Count", class: "block text-sm font-medium text-gray-300" %>
+            <%= f.number_field :output_count, in: 1..10, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="border-t border-gray-700 pt-6">
-      <h3 class="text-lg font-medium text-white mb-4">Output</h3>
-      <div class="grid grid-cols-3 gap-6">
-        <div>
-          <%= f.label :output_min_rating, "Min Rating", class: "block text-sm font-medium text-gray-300" %>
-          <%= f.number_field :output_min_rating, in: 50..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
-        </div>
-        <div>
-          <%= f.label :output_max_rating, "Max Rating", class: "block text-sm font-medium text-gray-300" %>
-          <%= f.number_field :output_max_rating, in: 50..100, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
-        </div>
-        <div>
-          <%= f.label :output_count, "Count Received", class: "block text-sm font-medium text-gray-300" %>
-          <%= f.number_field :output_count, in: 1..10, class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 sm:text-sm" %>
-        </div>
+      <div class="flex items-center gap-4 mt-6">
+        <%= f.check_box :active, class: "h-4 w-4 rounded border-gray-600 bg-gray-700 text-cyan-600 focus:ring-cyan-500" %>
+        <%= f.label :active, "Active", class: "text-sm font-medium text-gray-300" %>
       </div>
     </div>
 
-    <div class="flex items-center gap-4">
-      <%= f.check_box :active, class: "h-4 w-4 rounded border-gray-600 bg-gray-700 text-cyan-600 focus:ring-cyan-500" %>
-      <%= f.label :active, "Active", class: "text-sm font-medium text-gray-300" %>
+    <div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-white">Slots & Requirements</h2>
+        <%= button_to "Add Slot", add_slot_admin_set_exchange_path(@set_exchange), method: :post, class: "rounded-md border border-gray-600 bg-gray-700 px-3 py-1.5 text-sm font-semibold text-gray-300 hover:bg-gray-600" %>
+      </div>
+
+      <div id="slots-container" class="space-y-4">
+        <% @set_exchange.exchange_slots.order(:position).each_with_index do |slot, index| %>
+          <div class="rounded-lg bg-gray-900 p-4 border border-gray-700">
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-medium text-white">Slot <%= index + 1 %></span>
+              <%= button_to "Remove Slot", remove_slot_admin_set_exchange_path(@set_exchange, position: slot.position), method: :post, class: "text-sm text-red-400 hover:text-red-300" %>
+            </div>
+
+            <div class="space-y-3">
+              <% slot.exchange_qualifications.order(:created_at).each do |qual| %>
+                <%= form_with model: qual, url: update_qualification_admin_set_exchange_path(qual.exchange_slot.set_exchange, qual), method: :patch, class: "flex items-center gap-3 p-3 rounded bg-gray-800" do |qf| %>
+                  <%= qf.select :qualification_type,
+                      options_for_select([["Rating Range", "rating_range"], ["Specific Card", "specific_card"], ["Specific Set", "specific_set"]], selected: qual.qualification_type),
+                      {}, class: "rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white qualification-select" %>
+
+                  <div class="qualification-fields qualification-type-rating_range <%= qual.qualification_type != 'rating_range' ? 'hidden' : '' %>">
+                    <%= qf.number_field :min_rating, in: 50..100, placeholder: "Min", class: "w-20 rounded-md border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-white" %>
+                    <span class="text-gray-400">-</span>
+                    <%= qf.number_field :max_rating, in: 50..100, placeholder: "Max", class: "w-20 rounded-md border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-white" %>
+                  </div>
+
+                  <div class="qualification-fields qualification-type-specific_card <%= qual.qualification_type != 'specific_card' ? 'hidden' : '' %>">
+                    <%= qf.collection_select :card_id, Card.all.order(:name), :id, :name, { include_blank: "Select card" }, class: "rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white" %>
+                  </div>
+
+                  <div class="qualification-fields qualification-type-specific_set <%= qual.qualification_type != 'specific_set' ? 'hidden' : '' %>">
+                    <%= qf.collection_select :card_set_id, CardSet.all.order(:name), :id, :name, { include_blank: "Select set" }, class: "rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white" %>
+                  </div>
+
+                  <%= qf.submit "Save", class: "rounded-md bg-cyan-600 px-3 py-1 text-xs font-semibold text-white hover:bg-cyan-500" %>
+                  <%= button_to "Remove", remove_qualification_admin_set_exchange_path(qual.exchange_slot.set_exchange, qual), method: :delete, class: "text-xs text-red-400 hover:text-red-300" %>
+                <% end %>
+              <% end %>
+
+              <%= button_to "Add Qualification", add_qualification_admin_set_exchange_path(slot), method: :post, class: "text-sm text-cyan-400 hover:text-cyan-300" %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @set_exchange.exchange_slots.empty? %>
+          <p class="text-center text-gray-500 py-8">No slots yet. Add a slot to define requirements.</p>
+        <% end %>
+      </div>
     </div>
 
     <div class="flex items-center justify-between pt-6">
@@ -85,3 +123,16 @@
     </div>
   <% end %>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.qualification-select').forEach(select => {
+    select.addEventListener('change', function() {
+      const type = this.value;
+      const container = this.closest('form');
+      container.querySelectorAll('.qualification-fields').forEach(div => div.classList.add('hidden'));
+      container.querySelector(`.qualification-type-${type}`)?.classList.remove('hidden');
+    });
+  });
+});
+</script>
