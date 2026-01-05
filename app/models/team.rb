@@ -79,29 +79,34 @@ class Team < ApplicationRecord
 
   def pick_card_for_tier(tier)
     weights = case tier
-              when "high" then { legendary: 20, epic: 40, rare: 30, common: 10 }
-              when "mid" then { legendary: 5, epic: 20, rare: 40, common: 35 }
-              else { legendary: 2, epic: 8, rare: 30, common: 60 }
-              end
+    when "high" then { high: 15, mid_high: 30, mid: 35, low: 20 }
+    when "mid" then { high: 5, mid_high: 15, mid: 40, low: 40 }
+    else { high: 1, mid_high: 5, mid: 34, low: 60 }
+    end
 
     roll = rand(100)
-    rarity = if roll < weights[:legendary]
-               "legendary"
-             elsif roll < weights[:legendary] + weights[:epic]
-               "epic"
-             elsif roll < weights[:legendary] + weights[:epic] + weights[:rare]
-               "rare"
-             else
-               "common"
-             end
+    cumulative = 0
 
-    Card.where(rarity: rarity).order("RANDOM()").first || Card.order("RANDOM()").first
+    [
+      [ "high", weights[:high], 85..92 ],
+      [ "mid_high", weights[:mid_high], 75..84 ],
+      [ "mid", weights[:mid], 65..74 ],
+      [ "low", weights[:low], 50..64 ]
+    ].each do |name, weight, range|
+      cumulative += weight
+      if roll < cumulative
+        return Card.players.in_rating_range(range.min, range.max).order("RANDOM()").first ||
+               Card.players.order("RANDOM()").first
+      end
+    end
+
+    Card.players.order("RANDOM()").first
   end
 
   def update_rating(won)
     k_factor = 32
     change = won ? k_factor : -k_factor
-    new_rating = [rating + change, 100].max
+    new_rating = [ rating + change, 100 ].max
     update!(rating: new_rating)
   end
 end

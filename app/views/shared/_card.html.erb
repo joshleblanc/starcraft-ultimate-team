@@ -1,7 +1,9 @@
 <% card = user_card.card %>
-<div class="rounded-xl overflow-hidden border-2 transition-all hover:scale-105 hover:shadow-lg hover:shadow-<%= card.rarity == 'legendary' ? 'yellow' : card.rarity == 'epic' ? 'purple' : card.rarity == 'rare' ? 'blue' : 'gray' %>-500/20"
+<% tier_colors = { "bronze" => "border-gray-500 bg-gray-500/20", "silver" => "border-blue-400 bg-blue-400/20", "gold" => "border-yellow-400 bg-yellow-400/20", "diamond" => "border-cyan-400 bg-cyan-400/20", "master" => "border-purple-400 bg-purple-400/20", "legend" => "border-red-400 bg-red-400/20" } %>
+<% tier_class = tier_colors[card.rating_tier] || "border-gray-500 bg-gray-500/20" %>
+<div class="rounded-xl overflow-hidden border-2 transition-all hover:scale-105 hover:shadow-lg"
      style="border-color: <%= card.rarity_color %>; background: linear-gradient(135deg, #1f2937 0%, #111827 100%);">
-  
+   
   <!-- Card Header -->
   <div class="p-3 text-center" style="background: linear-gradient(180deg, <%= card.rarity_color %>22 0%, transparent 100%);">
     <div class="text-3xl mb-1"><%= card.race_icon %></div>
@@ -63,10 +65,10 @@
     </div>
   </div>
   
-  <!-- Rarity Badge -->
+  <!-- Tier Badge -->
   <div class="text-center pb-2">
     <span class="text-xs font-semibold uppercase tracking-wider" style="color: <%= card.rarity_color %>">
-      <%= card.rarity %>
+      <%= card.rating_tier %>
     </span>
   </div>
 </div>

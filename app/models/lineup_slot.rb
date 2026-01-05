@@ -6,5 +6,5 @@ class LineupSlot < ApplicationRecord
   validates :position, uniqueness: { scope: :lineup_id }
   validates :user_card_id, uniqueness: { scope: :lineup_id, message: "is already in this lineup" }
 
-  delegate :name, :race, :overall_rating, :rarity, :card, to: :user_card
+  delegate :name, :race, :overall_rating, :rating_tier, :card, to: :user_card
 end

@@ -63,10 +63,18 @@ Rails.application.routes.draw do
     end
   end
 
+  # Exchanges
+  resources :exchanges, only: [ :index, :show ] do
+    member do
+      post :redeem
+    end
+  end
+
   # Admin
   namespace :admin do
     resources :cards
     resources :card_sets
+    resources :set_exchanges
   end
 
   # Health check

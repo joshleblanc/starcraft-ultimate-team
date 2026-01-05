@@ -33,7 +33,7 @@ class Admin::CardsController < ApplicationController
 
   def card_params
     params.require(:card).permit(
-      :name, :race, :rarity, :player_role, :card_set_id,
+      :name, :race, :player_role, :card_set_id,
       :macro, :micro, :starsense, :poise, :speed,
       :early_game, :mid_game, :late_game
     )

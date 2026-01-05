@@ -26,6 +26,12 @@
                 Open Packs
               <% end %>
             </li>
+            <li>
+              <%= link_to exchanges_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 #{request.path.start_with?('/exchanges') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}" do %>
+                <span class="text-lg">🔄</span>
+                Exchanges
+              <% end %>
+            </li>
           </ul>
         </li>
         
@@ -79,6 +85,12 @@
                 <%= link_to admin_cards_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 #{request.path == '/admin/cards' ? 'bg-cyan-900 text-cyan-300' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}" do %>
                   <span class="text-lg">🎴</span>
                   Cards
+                <% end %>
+              </li>
+              <li>
+                <%= link_to admin_set_exchanges_path, class: "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 #{request.path.start_with?('/admin/set_exchanges') ? 'bg-cyan-900 text-cyan-300' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}" do %>
+                  <span class="text-lg">🔄</span>
+                  Exchanges
                 <% end %>
               </li>
             </ul>

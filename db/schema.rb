@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_05_002110) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_06_000002) do
   create_table "card_sets", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description"
@@ -32,14 +32,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_002110) do
     t.string "player_role", default: "player"
     t.integer "poise", default: 50, null: false
     t.string "race", null: false
-    t.string "rarity", default: "common", null: false
     t.integer "speed", default: 50, null: false
     t.integer "starsense", default: 50, null: false
     t.datetime "updated_at", null: false
     t.index ["card_set_id"], name: "index_cards_on_card_set_id"
     t.index ["overall_rating"], name: "index_cards_on_overall_rating"
     t.index ["race"], name: "index_cards_on_race"
-    t.index ["rarity"], name: "index_cards_on_rarity"
   end
 
   create_table "games", force: :cascade do |t|
@@ -187,16 +185,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_002110) do
   end
 
   create_table "packs", force: :cascade do |t|
+    t.integer "bronze_weight", default: 50, null: false
     t.integer "card_count", default: 5, null: false
-    t.integer "common_weight", default: 70
     t.integer "cost", default: 100, null: false
     t.datetime "created_at", null: false
     t.text "description"
-    t.integer "epic_weight", default: 8
-    t.integer "legendary_weight", default: 2
+    t.integer "diamond_weight", default: 4, null: false
+    t.integer "gold_weight", default: 15, null: false
+    t.integer "legend_weight", default: 0, null: false
+    t.integer "master_weight", default: 1, null: false
     t.string "name", null: false
     t.string "pack_type", default: "standard", null: false
-    t.integer "rare_weight", default: 20
+    t.integer "silver_weight", default: 30, null: false
     t.datetime "updated_at", null: false
   end
 
@@ -207,6 +207,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_002110) do
     t.string "user_agent"
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "set_exchanges", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.integer "card_set_id", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "input_count", null: false
+    t.integer "input_max_rating", null: false
+    t.integer "input_min_rating", null: false
+    t.string "name", null: false
+    t.integer "output_count", default: 1, null: false
+    t.integer "output_max_rating", null: false
+    t.integer "output_min_rating", null: false
+    t.datetime "updated_at", null: false
+    t.index ["card_set_id", "active"], name: "index_set_exchanges_on_card_set_id_and_active"
+    t.index ["card_set_id"], name: "index_set_exchanges_on_card_set_id"
   end
 
   create_table "teams", force: :cascade do |t|
@@ -267,6 +284,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_002110) do
   add_foreign_key "pack_openings", "packs"
   add_foreign_key "pack_openings", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "set_exchanges", "card_sets"
   add_foreign_key "teams", "users"
   add_foreign_key "user_cards", "cards"
   add_foreign_key "user_cards", "teams"

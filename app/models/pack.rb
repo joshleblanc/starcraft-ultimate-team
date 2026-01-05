@@ -1,5 +1,5 @@
 class Pack < ApplicationRecord
-  PACK_TYPES = %w[standard premium legendary].freeze
+  PACK_TYPES = %w[standard premium].freeze
 
   has_many :pack_openings, dependent: :destroy
 
@@ -7,20 +7,31 @@ class Pack < ApplicationRecord
   validates :pack_type, presence: true, inclusion: { in: PACK_TYPES }
   validates :card_count, numericality: { greater_than: 0 }
   validates :cost, numericality: { greater_than_or_equal_to: 0 }
-  validates :common_weight, :rare_weight, :epic_weight, :legendary_weight,
+  validates :bronze_weight, :silver_weight, :gold_weight, :diamond_weight, :master_weight, :legend_weight,
             numericality: { greater_than_or_equal_to: 0 }
 
+  RATING_RANGES = {
+    bronze: 50..64,
+    silver: 65..74,
+    gold: 75..84,
+    diamond: 85..92,
+    master: 93..96,
+    legend: 97..100
+  }.freeze
+
   def total_weight
-    common_weight + rare_weight + epic_weight + legendary_weight
+    bronze_weight + silver_weight + gold_weight + diamond_weight + master_weight + legend_weight
   end
 
-  def rarity_probabilities
+  def rating_probabilities
     total = total_weight.to_f
     {
-      common: (common_weight / total * 100).round(1),
-      rare: (rare_weight / total * 100).round(1),
-      epic: (epic_weight / total * 100).round(1),
-      legendary: (legendary_weight / total * 100).round(1)
+      bronze: (bronze_weight / total * 100).round(1),
+      silver: (silver_weight / total * 100).round(1),
+      gold: (gold_weight / total * 100).round(1),
+      diamond: (diamond_weight / total * 100).round(1),
+      master: (master_weight / total * 100).round(1),
+      legend: (legend_weight / total * 100).round(1)
     }
   end
 
@@ -29,10 +40,10 @@ class Pack < ApplicationRecord
 
     user.with_lock do
       user.update!(credits: user.credits - cost)
-      
+
       opening = pack_openings.create!(user: user, opened_at: Time.current)
       cards = generate_cards
-      
+
       user_cards = cards.map do |card|
         user.user_cards.create!(card: card)
       end
@@ -48,24 +59,27 @@ class Pack < ApplicationRecord
   end
 
   def pick_random_card
-    rarity = weighted_random_rarity
-    Card.players.by_rarity(rarity).order("RANDOM()").first || Card.players.order("RANDOM()").first
+    tier = weighted_random_tier
+    range = RATING_RANGES[tier.to_sym]
+    Card.players.in_rating_range(range.min, range.max).order("RANDOM()").first || Card.players.order("RANDOM()").first
   end
 
-  def weighted_random_rarity
+  def weighted_random_tier
     roll = rand(total_weight)
     cumulative = 0
 
     [
-      ["common", common_weight],
-      ["rare", rare_weight],
-      ["epic", epic_weight],
-      ["legendary", legendary_weight]
-    ].each do |rarity, weight|
+      [ "bronze", bronze_weight ],
+      [ "silver", silver_weight ],
+      [ "gold", gold_weight ],
+      [ "diamond", diamond_weight ],
+      [ "master", master_weight ],
+      [ "legend", legend_weight ]
+    ].each do |tier, weight|
       cumulative += weight
-      return rarity if roll < cumulative
+      return tier if roll < cumulative
     end
 
-    "common"
+    "bronze"
   end
 end

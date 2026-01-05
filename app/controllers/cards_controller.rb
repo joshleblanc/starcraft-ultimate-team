@@ -1,6 +1,6 @@
 class CardsController < ApplicationController
   def index
-    @user_cards = policy_scope(current_user.user_cards).joins(:card).order(Arel.sql("CASE cards.rarity WHEN 'legendary' THEN 4 WHEN 'epic' THEN 3 WHEN 'rare' THEN 2 ELSE 1 END DESC, cards.overall_rating DESC"))
+    @user_cards = policy_scope(current_user.user_cards).joins(:card).order(overall_rating: :desc)
     @starters = @user_cards.starters
     @bench = @user_cards.bench
   end

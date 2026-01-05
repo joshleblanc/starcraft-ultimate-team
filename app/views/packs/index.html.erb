@@ -18,19 +18,19 @@
         <h3 class="text-xl font-bold text-white"><%= pack.name %></h3>
         <p class="text-gray-400 text-sm mt-1"><%= pack.description %></p>
       </div>
-      
+
       <!-- Pack Info -->
       <div class="p-4 space-y-4">
         <div class="flex justify-between text-sm">
           <span class="text-gray-400">Cards per pack:</span>
           <span class="font-semibold text-white"><%= pack.card_count %></span>
         </div>
-        
+
         <!-- Probabilities -->
         <div>
           <div class="text-xs text-gray-500 mb-2">Drop rates:</div>
           <div class="grid grid-cols-4 gap-1 text-xs text-center">
-            <% probs = pack.rarity_probabilities %>
+            <% probs = pack.rating_probabilities %>
             <div class="rounded bg-gray-700/50 p-1">
               <div style="color: #9ca3af">COM</div>
               <div class="font-semibold text-white"><%= probs[:common] %>%</div>
@@ -49,7 +49,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Price & Buy Button -->
         <div class="pt-2">
           <% if current_user.can_afford?(pack.cost) %>
