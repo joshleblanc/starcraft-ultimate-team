@@ -1,6 +1,7 @@
 class CardsController < ApplicationController
   def index
-    @user_cards = policy_scope(current_user.user_cards).joins(:card).order(overall_rating: :desc)
+    @user = current_user
+    @user_cards = policy_scope(@user.user_cards).joins(:card).order(overall_rating: :desc)
     
     # Filter by race if provided
     if params[:race].present?
