@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  description: MyString
+  name: Base Set
+  description: The base card set
 
 two:
-  name: MyString
-  description: MyString
+  name: Expansion Set
+  description: The expansion card set

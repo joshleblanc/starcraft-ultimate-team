@@ -3,19 +3,62 @@
   <p class="mt-2 text-gray-400">Manage your collection and set your starting lineup</p>
 </div>
 
+<!-- Quick Stats Bar -->
+<div class="mb-6 rounded-xl bg-gray-800 border border-gray-700 p-4">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-6">
+      <div class="text-center">
+        <div class="text-xl font-bold text-cyan-400"><%= @user.user_cards.count %></div>
+        <div class="text-xs text-gray-500">Total Cards</div>
+      </div>
+      <div class="text-center">
+        <div class="text-xl font-bold text-yellow-400"><%= @starters.count %>/5</div>
+        <div class="text-xs text-gray-500">Starters</div>
+      </div>
+      <div class="text-center">
+        <div class="text-xl font-bold text-green-400"><%= @bench.count %></div>
+        <div class="text-xs text-gray-500">On Bench</div>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-gray-400">Filter by race:</span>
+      <%= link_to "All", cards_path, class: "px-3 py-1 rounded-full text-sm #{params[:race].nil? ? 'bg-cyan-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}" %>
+      <%= link_to "🔧 Terran", cards_path(race: "Terran"), class: "px-3 py-1 rounded-full text-sm #{params[:race] == 'Terran' ? 'bg-cyan-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}" %>
+      <%= link_to "🐛 Zerg", cards_path(race: "Zerg"), class: "px-3 py-1 rounded-full text-sm #{params[:race] == 'Zerg' ? 'bg-cyan-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}" %>
+      <%= link_to "⚡ Protoss", cards_path(race: "Protoss"), class: "px-3 py-1 rounded-full text-sm #{params[:race] == 'Protoss' ? 'bg-cyan-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}" %>
+    </div>
+  </div>
+</div>
+
+<!-- Filtered Cards Summary -->
+<% if params[:race] %>
+  <div class="mb-4 flex items-center gap-2">
+    <span class="text-gray-400">Showing:</span>
+    <span class="px-3 py-1 rounded-full bg-cyan-600/20 text-cyan-400 text-sm border border-cyan-500/30">
+      <%= params[:race] %>
+      <%= link_to "✕", cards_path, class: "ml-2 hover:text-white" %>
+    </span>
+  </div>
+<% end %>
+
 <!-- Starting Lineup -->
 <div class="mb-8">
-  <h2 class="text-xl font-bold text-white mb-4">⚔️ Starting Lineup</h2>
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-bold text-white">⚔️ Starting Lineup</h2>
+    <span class="text-sm text-gray-400"><%= @starters.count %> of 5 positions filled</span>
+  </div>
+  
   <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
     <% (1..5).each do |position| %>
       <% starter = @starters.find { |s| s.position == position } %>
       <% if starter %>
         <div class="relative group">
           <%= render "shared/card", user_card: starter %>
-          <div class="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500 text-sm font-bold text-white">
+          <div class="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500 text-sm font-bold text-white shadow-lg">
             <%= position %>
           </div>
-          <%= button_to remove_starter_card_path(starter), method: :delete, class: "absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white text-sm hover:bg-red-600 transition-opacity" do %>
+          <%= button_to remove_starter_card_path(starter), method: :delete, class: "absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white text-sm hover:bg-red-600 transition-opacity shadow-lg" do %>
             ✕
           <% end %>
         </div>
@@ -33,7 +76,10 @@
 
 <!-- Bench -->
 <div>
-  <h2 class="text-xl font-bold text-white mb-4">📋 Bench (<%= @bench.count %> cards)</h2>
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-bold text-white">📋 Bench</h2>
+    <span class="text-sm text-gray-400"><%= @bench.count %> cards available</span>
+  </div>
   
   <% if @bench.any? %>
     <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
@@ -41,12 +87,12 @@
         <div class="relative group">
           <%= render "shared/card", user_card: user_card %>
           
-          <!-- Set as Starter dropdown -->
+          <!-- Hover Actions -->
           <div class="absolute bottom-0 left-0 right-0 bg-gray-900/95 p-2 opacity-0 group-hover:opacity-100 transition-opacity rounded-b-xl">
-            <div class="text-xs text-gray-400 mb-1">Set as starter:</div>
+            <div class="text-xs text-gray-400 mb-1 text-center">Set as starter:</div>
             <div class="flex justify-center gap-1">
               <% (1..5).each do |position| %>
-                <%= button_to set_starter_card_path(user_card, position: position), class: "flex h-7 w-7 items-center justify-center rounded bg-cyan-600 text-xs font-semibold text-white hover:bg-cyan-500" do %>
+                <%= button_to set_starter_card_path(user_card, position: position), class: "flex h-7 w-7 items-center justify-center rounded bg-cyan-600 text-xs font-semibold text-white hover:bg-cyan-500 transition-colors" do %>
                   <%= position %>
                 <% end %>
               <% end %>
@@ -58,7 +104,13 @@
   <% else %>
     <div class="rounded-xl bg-gray-800 border border-gray-700 p-8 text-center">
       <div class="text-4xl mb-4">📦</div>
-      <h3 class="text-lg font-semibold text-white mb-2">No cards on bench</h3>
+      <h3 class="text-lg font-semibold text-white mb-2">
+        <% if params[:race] %>
+          No <%= params[:race] %> cards on bench
+        <% else %>
+          No cards on bench
+        <% end %>
+      </h3>
       <p class="text-gray-400 mb-4">Open packs to add more cards to your collection.</p>
       <%= link_to "Open Packs", packs_path, class: "inline-flex items-center px-4 py-2 rounded-md bg-cyan-600 text-white font-semibold hover:bg-cyan-500" %>
     </div>
