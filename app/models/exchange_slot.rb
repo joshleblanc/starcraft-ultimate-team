@@ -27,7 +27,7 @@ class ExchangeSlot < ApplicationRecord
 
   def eligible_cards_for_user(user)
     qualifiers = exchange_qualifications.to_a
-    return user_cards.none if qualifiers.empty?
+    return user.user_cards.none if qualifiers.empty?
 
     user_cards = user.user_cards.joins(:card)
 
@@ -46,6 +46,6 @@ class ExchangeSlot < ApplicationRecord
        else
          scope.or(card_scope)
        end
-    end || user_cards.none
+    end || user.user_cards.none
   end
 end
