@@ -3,6 +3,8 @@ require "test_helper"
 class CardSetsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @card_set = card_sets(:one)
+    @user = users(:one)
+    sign_in_as(@user)
   end
 
   test "should get index" do
@@ -17,7 +19,7 @@ class CardSetsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create card_set" do
     assert_difference("CardSet.count") do
-      post card_sets_url, params: { card_set: { description: @card_set.description, name: @card_set.name } }
+      post card_sets_url, params: { card_set: { description: "Test description", name: "Test Set" } }
     end
 
     assert_redirected_to card_set_url(CardSet.last)

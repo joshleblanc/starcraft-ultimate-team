@@ -1,6 +1,12 @@
 class CardsController < ApplicationController
   def index
     @user_cards = policy_scope(current_user.user_cards).joins(:card).order(overall_rating: :desc)
+    
+    # Filter by race if provided
+    if params[:race].present?
+      @user_cards = @user_cards.joins(:card).where(cards: { race: params[:race] })
+    end
+    
     @starters = @user_cards.starters
     @bench = @user_cards.bench
   end

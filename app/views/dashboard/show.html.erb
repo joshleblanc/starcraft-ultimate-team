@@ -3,19 +3,50 @@
   <p class="mt-2 text-gray-400">Manage your SC2 Ultimate Team collection</p>
 </div>
 
+<!-- Quick Actions Bar -->
+<div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+  <%= link_to packs_path, class: "rounded-xl bg-gradient-to-br from-yellow-600 to-orange-600 p-4 hover:from-yellow-500 hover:to-orange-500 transition-all" do %>
+    <div class="text-center">
+      <div class="text-2xl mb-1">📦</div>
+      <div class="text-sm font-semibold text-white">Open Packs</div>
+    </div>
+  <% end %>
+  
+  <%= link_to cards_path, class: "rounded-xl bg-gradient-to-br from-cyan-600 to-blue-600 p-4 hover:from-cyan-500 hover:to-blue-500 transition-all" do %>
+    <div class="text-center">
+      <div class="text-2xl mb-1">🎴</div>
+      <div class="text-sm font-semibold text-white">My Cards</div>
+    </div>
+  <% end %>
+  
+  <%= link_to exchanges_path, class: "rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 p-4 hover:from-purple-500 hover:to-pink-500 transition-all" do %>
+    <div class="text-center">
+      <div class="text-2xl mb-1">🔄</div>
+      <div class="text-sm font-semibold text-white">Exchange</div>
+    </div>
+  <% end %>
+  
+  <%= link_to matches_path, class: "rounded-xl bg-gradient-to-br from-green-600 to-emerald-600 p-4 hover:from-green-500 hover:to-emerald-500 transition-all" do %>
+    <div class="text-center">
+      <div class="text-2xl mb-1">⚔️</div>
+      <div class="text-sm font-semibold text-white">Matches</div>
+    </div>
+  <% end %>
+</div>
+
 <!-- Play Cup Rush CTA -->
 <% if @team %>
-  <%= link_to cup_rush_path, class: "block mb-8 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 p-6 hover:from-cyan-500 hover:to-purple-500 transition-all" do %>
+  <%= link_to cup_rush_path, class: "block mb-6 rounded-xl bg-gradient-to-r from-cyan-600 via-purple-600 to-pink-600 p-6 hover:from-cyan-500 hover:via-purple-500 hover:to-pink-500 transition-all transform hover:scale-[1.01]" do %>
     <div class="flex items-center justify-between">
       <div>
         <div class="text-2xl font-bold text-white">🏆 Cup Rush</div>
         <div class="text-cyan-100">Play against CPU teams in a league tournament</div>
       </div>
-      <div class="text-4xl">→</div>
+      <div class="text-5xl">🎮</div>
     </div>
   <% end %>
 <% else %>
-  <%= link_to new_team_path, class: "block mb-8 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 p-6 hover:from-cyan-500 hover:to-purple-500 transition-all" do %>
+  <%= link_to new_team_path, class: "block mb-6 rounded-xl bg-gradient-to-r from-cyan-600 to-purple-600 p-6 hover:from-cyan-500 hover:to-purple-500 transition-all" do %>
     <div class="flex items-center justify-between">
       <div>
         <div class="text-2xl font-bold text-white">👥 Create Your Team</div>
@@ -26,113 +57,122 @@
   <% end %>
 <% end %>
 
-<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-  <!-- Quick Stats -->
-  <div class="lg:col-span-2 grid grid-cols-2 gap-4 sm:grid-cols-4">
-    <div class="rounded-xl bg-gray-800 p-4 border border-gray-700">
+<!-- Stats Overview Bar -->
+<div class="mb-6 rounded-xl bg-gradient-to-r from-gray-800 via-gray-850 to-gray-800 border border-gray-700 p-5">
+  <div class="grid grid-cols-2 gap-4 sm:grid-cols-5">
+    <div class="text-center">
       <div class="text-2xl font-bold text-cyan-400"><%= @user.user_cards.count %></div>
-      <div class="text-sm text-gray-400">Cards Owned</div>
+      <div class="text-xs text-gray-400 uppercase tracking-wide">Cards</div>
     </div>
-    <div class="rounded-xl bg-gray-800 p-4 border border-gray-700">
+    <div class="text-center">
       <div class="text-2xl font-bold text-yellow-400">💰 <%= number_with_delimiter(@user.credits) %></div>
-      <div class="text-sm text-gray-400">Credits</div>
+      <div class="text-xs text-gray-400 uppercase tracking-wide">Credits</div>
     </div>
-    <div class="rounded-xl bg-gray-800 p-4 border border-gray-700">
-      <div class="text-2xl font-bold text-green-400"><%= @team&.wins || 0 %>-<%= @team&.losses || 0 %></div>
-      <div class="text-sm text-gray-400">Team Record</div>
+    <div class="text-center">
+      <div class="text-2xl font-bold text-green-400"><%= @team&.wins || 0 %>W</div>
+      <div class="text-xs text-gray-400 uppercase tracking-wide">Wins</div>
     </div>
-    <div class="rounded-xl bg-gray-800 p-4 border border-gray-700">
+    <div class="text-center">
+      <div class="text-2xl font-bold text-red-400"><%= @team&.losses || 0 %>L</div>
+      <div class="text-xs text-gray-400 uppercase tracking-wide">Losses</div>
+    </div>
+    <div class="text-center">
       <div class="text-2xl font-bold text-purple-400"><%= @team&.rating || 1000 %></div>
-      <div class="text-sm text-gray-400">Rating</div>
+      <div class="text-xs text-gray-400 uppercase tracking-wide">Rating</div>
     </div>
   </div>
+</div>
 
-  <!-- Notifications -->
-  <div class="rounded-xl bg-gray-800 p-4 border border-gray-700">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+  <!-- Starting Lineup -->
+  <div class="lg:col-span-2">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="font-semibold text-white">🔔 Notifications</h3>
-      <%= link_to "View all", notifications_path, class: "text-sm text-cyan-400 hover:text-cyan-300" %>
+      <h2 class="text-xl font-bold text-white">⚔️ Starting Lineup</h2>
+      <%= link_to "Manage Cards", cards_path, class: "text-sm text-cyan-400 hover:text-cyan-300" %>
     </div>
-    <% if @notifications.any? %>
-      <div class="space-y-2">
-        <% @notifications.each do |notification| %>
-          <div class="text-sm p-2 rounded <%= notification.unread? ? 'bg-gray-700' : 'bg-gray-750' %>">
-            <span><%= notification.message %></span>
+    
+    <% if @starters.any? %>
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <% @starters.each do |user_card| %>
+          <%= render "shared/card", user_card: user_card %>
+        <% end %>
+        <% (5 - @starters.count).times do |i| %>
+          <div class="rounded-xl bg-gray-800/50 border-2 border-dashed border-gray-600 p-4 flex items-center justify-center aspect-[3/4]">
+            <div class="text-center text-gray-500">
+              <div class="text-2xl mb-1">➕</div>
+              <div class="text-xs">Slot <%= @starters.count + i + 1 %></div>
+            </div>
           </div>
         <% end %>
       </div>
     <% else %>
-      <p class="text-sm text-gray-500">No notifications</p>
+      <div class="rounded-xl bg-gray-800 border border-gray-700 p-8 text-center">
+        <div class="text-4xl mb-4">📦</div>
+        <h3 class="text-lg font-semibold text-white mb-2">No cards yet!</h3>
+        <p class="text-gray-400 mb-4">Open some packs to get started.</p>
+        <%= link_to "Open Packs", packs_path, class: "inline-flex items-center px-4 py-2 rounded-md bg-cyan-600 text-white font-semibold hover:bg-cyan-500" %>
+      </div>
     <% end %>
   </div>
-</div>
 
-<!-- Starting Lineup -->
-<div class="mt-8">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-xl font-bold text-white">⚔️ Starting Lineup</h2>
-    <%= link_to "Manage Cards", cards_path, class: "text-sm text-cyan-400 hover:text-cyan-300" %>
-  </div>
-  
-  <% if @starters.any? %>
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-      <% @starters.each do |user_card| %>
-        <%= render "shared/card", user_card: user_card %>
-      <% end %>
-      <% (5 - @starters.count).times do |i| %>
-        <div class="rounded-xl bg-gray-800/50 border-2 border-dashed border-gray-600 p-6 flex items-center justify-center">
-          <div class="text-center text-gray-500">
-            <div class="text-3xl mb-2">➕</div>
-            <div class="text-sm">Position <%= @starters.count + i + 1 %></div>
+  <!-- Sidebar -->
+  <div class="space-y-6">
+    <!-- Team Card -->
+    <div class="rounded-xl bg-gray-800 p-5 border border-gray-700">
+      <h3 class="font-semibold text-white mb-4">👥 My Team</h3>
+      <% if @team %>
+        <div class="flex items-center gap-4 mb-4">
+          <div class="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 text-xl font-bold">
+            <%= @team.name[0..1].upcase %>
+          </div>
+          <div>
+            <div class="text-lg font-bold text-white"><%= @team.name %></div>
+            <div class="text-sm text-gray-400"><%= @team.win_rate %>% win rate</div>
           </div>
         </div>
+        <%= link_to "View Team", @team, class: "block w-full text-center rounded-md bg-gray-700 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-600" %>
+      <% else %>
+        <p class="text-gray-400 mb-4">Create a team to compete in leagues!</p>
+        <%= link_to "Create Team", new_team_path, class: "block w-full text-center rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-500" %>
       <% end %>
     </div>
-  <% else %>
-    <div class="rounded-xl bg-gray-800 border border-gray-700 p-8 text-center">
-      <div class="text-4xl mb-4">📦</div>
-      <h3 class="text-lg font-semibold text-white mb-2">No cards yet!</h3>
-      <p class="text-gray-400 mb-4">Open some packs to get started.</p>
-      <%= link_to "Open Packs", packs_path, class: "inline-flex items-center px-4 py-2 rounded-md bg-cyan-600 text-white font-semibold hover:bg-cyan-500" %>
+
+    <!-- Active League -->
+    <div class="rounded-xl bg-gray-800 p-5 border border-gray-700">
+      <h3 class="font-semibold text-white mb-4">🏆 Active League</h3>
+      <% if @active_league %>
+        <div class="mb-4">
+          <div class="text-lg font-bold text-white"><%= @active_league.name %></div>
+          <div class="text-sm text-gray-400">Round <%= @active_league.current_round %> of <%= @active_league.total_rounds %></div>
+          <div class="mt-2 h-2 bg-gray-700 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-cyan-500 to-purple-500" style="width: <%= (@active_league.current_round.to_f / @active_league.total_rounds * 100).round %>%"></div>
+          </div>
+        </div>
+        <%= link_to "View League", @active_league, class: "block w-full text-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500" %>
+      <% else %>
+        <p class="text-gray-400 mb-4">Join a league to start competing!</p>
+        <%= link_to "Browse Leagues", leagues_path, class: "block w-full text-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500" %>
+      <% end %>
     </div>
-  <% end %>
-</div>
 
-<!-- Team & League Status -->
-<div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-  <!-- Team Card -->
-  <div class="rounded-xl bg-gray-800 p-6 border border-gray-700">
-    <h2 class="text-xl font-bold text-white mb-4">👥 My Team</h2>
-    <% if @team %>
-      <div class="flex items-center gap-4">
-        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 text-2xl font-bold">
-          <%= @team.name[0..1].upcase %>
-        </div>
-        <div>
-          <div class="text-xl font-bold text-white"><%= @team.name %></div>
-          <div class="text-sm text-gray-400">Rating: <%= @team.rating %> • <%= @team.win_rate %>% win rate</div>
-        </div>
+    <!-- Notifications -->
+    <div class="rounded-xl bg-gray-800 p-5 border border-gray-700">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-white">🔔 Notifications</h3>
+        <%= link_to "View all", notifications_path, class: "text-xs text-cyan-400 hover:text-cyan-300" %>
       </div>
-      <%= link_to "View Team", @team, class: "mt-4 block text-center rounded-md bg-gray-700 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-600" %>
-    <% else %>
-      <p class="text-gray-400 mb-4">Create a team to compete in leagues!</p>
-      <%= link_to "Create Team", new_team_path, class: "inline-flex items-center px-4 py-2 rounded-md bg-cyan-600 text-white font-semibold hover:bg-cyan-500" %>
-    <% end %>
-  </div>
-
-  <!-- Active League -->
-  <div class="rounded-xl bg-gray-800 p-6 border border-gray-700">
-    <h2 class="text-xl font-bold text-white mb-4">🏆 Active League</h2>
-    <% if @active_league %>
-      <div class="mb-4">
-        <div class="text-lg font-bold text-white"><%= @active_league.name %></div>
-        <div class="text-sm text-gray-400">Round <%= @active_league.current_round %> of <%= @active_league.total_rounds %></div>
-      </div>
-      <%= link_to "View League", @active_league, class: "block text-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500" %>
-    <% else %>
-      <p class="text-gray-400 mb-4">Join a league to start competing!</p>
-      <%= link_to "Browse Leagues", leagues_path, class: "inline-flex items-center px-4 py-2 rounded-md bg-purple-600 text-white font-semibold hover:bg-purple-500" %>
-    <% end %>
+      <% if @notifications.any? %>
+        <div class="space-y-2">
+          <% @notifications.first(3).each do |notification| %>
+            <div class="text-sm p-2 rounded <%= notification.unread? ? 'bg-gray-700' : 'bg-gray-750' %>">
+              <span class="text-gray-300"><%= notification.message %></span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500">No new notifications</p>
+      <% end %>
+    </div>
   </div>
 </div>
 
@@ -144,8 +184,8 @@
       <%= link_to "View all", matches_path, class: "text-sm text-cyan-400 hover:text-cyan-300" %>
     </div>
     <div class="space-y-2">
-      <% @recent_matches.each do |match| %>
-        <%= link_to match, class: "block rounded-lg bg-gray-800 p-4 border border-gray-700 hover:border-gray-600" do %>
+      <% @recent_matches.first(5).each do |match| %>
+        <%= link_to match, class: "block rounded-lg bg-gray-800 p-4 border border-gray-700 hover:border-gray-600 transition-colors" do %>
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <span class="font-semibold <%= match.home_team == @team ? 'text-cyan-400' : 'text-gray-300' %>">

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_06_010200) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_223701) do
   create_table "card_sets", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description"
@@ -291,6 +291,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_010200) do
     t.integer "credits", default: 1000, null: false
     t.string "email_address", null: false
     t.string "password_digest", null: false
+    t.string "password_reset_token"
     t.datetime "updated_at", null: false
     t.string "username"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
